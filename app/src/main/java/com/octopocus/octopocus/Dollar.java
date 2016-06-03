@@ -32,6 +32,8 @@ package com.octopocus.octopocus;
 
 //import io.hybrid.interaction.touch.TouchListener;
 
+import android.widget.Toast;
+
 import java.util.Vector;
 
 //import javax.microedition.lcdui.Graphics; //Java ME -> render
@@ -49,9 +51,9 @@ public class Dollar implements TouchListener
 	protected Vector points = new Vector(1000);
 	
 	protected Recognizer recognizer;
-	protected Result result = new Result("no gesture", 0, -1);
+	public Result result = new Result("no gesture", 0, -1);
 	
-	protected boolean active = false;
+	protected boolean active = true;
 	
 	protected DollarListener listener = null;
 
@@ -103,6 +105,7 @@ public class Dollar implements TouchListener
 	
 	public void addPoint(int x, int y)
 	{
+
 		if (!active)
 			return;
 		
@@ -112,13 +115,15 @@ public class Dollar implements TouchListener
 	
 	public void recognize()
 	{
+
 		if (!active)
 			return;
-		
+
 		if (points.size() == 0) //the recognizer will crash if we try to process an empty set of points...
 			return;
 		
-		result = recognizer.Recognize(points);		
+		result = recognizer.Recognize(points);
+        System.out.println("Result" + result.Name);
 //		points.removeAllElements();
 		
 		if (listener != null)
