@@ -14,39 +14,39 @@ import android.view.View;
 
 public class MyView extends View {
 
-    private Paint mPaint;
+    private Paint mFeedbackPaint;
     private Paint mObjectPaint;
-    private PointF point;
-    private Path path = new Path();
-    public Dollar dollar = new Dollar(1);
-    public Dollar dollar_drawn_path = new Dollar(1);
 
-    private float scale = 3;
+    private Path mFeebackPath = new Path();
+    private Path mFeedworwardPath = new Path();
+    private Path mPrefixPath = new Path();
 
-    private int init_pos_x;
-    private int init_pos_y;
-    private int current_pos_x;
-    private int current_pos_y;
-    private int start_draw_position = 0;
-    private boolean move = false;
-    private boolean draw = true;
+    private PointF mCurrentPos;
+    private PointF mInitPos;
+
+    TemplateData mObjectData = new TemplateData();
+    public Dollar mDollar = new Dollar(1);
+    private float mObjectScale = 3; // Scale of objects
+    private int mStartDrawPosObject = 0;
+
+    private boolean mCursorMoves = false;
+    private boolean mDrawObject = true;
 
 
     public MyView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init();
+        initPaint();
     }
 
-    private void init() {
-        mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mPaint.setStyle(Paint.Style.STROKE);
-        mPaint.setStrokeWidth(10);
+    private void initPaint() {
+        mFeedbackPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mFeedbackPaint.setStyle(Paint.Style.STROKE);
+        mFeedbackPaint.setStrokeWidth(10);
         mObjectPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mObjectPaint.setStyle(Paint.Style.STROKE);
         mObjectPaint.setColor(Color.BLUE);
         mObjectPaint.setStrokeWidth(10);
     }
-
 
     // source:
     // http://stackoverflow.com/questions/31901364/android-using-ontouchlistener-in-canvas
@@ -58,27 +58,25 @@ public class MyView extends View {
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                point = new PointF(x, y);
-                path = new Path();
-                path.moveTo(point.x, point.y);
-                init_pos_x = (int) x;
-                init_pos_y = (int)y;
+                mCurrentPos = new PointF(x, y);
+                mInitPos = new PointF(x, y);
+                mFeebackPath = new Path();
+                mFeebackPath.moveTo(mCurrentPos.x, mCurrentPos.y);
                 invalidate();
                 break;
             case MotionEvent.ACTION_MOVE:
-                point.set(x, y);
-                move = true;
+                mCurrentPos.set(x, y);
+                mCursorMoves = true;
                 invalidate();
                 break;
             case MotionEvent.ACTION_UP:
-                dollar.recognize();
-                ((MainActivity) this.getContext()).writeDollar(dollar);
-                dollar.clear();
-                move = false;
-
+                mDollar.recognize();
+                ((MainActivity) this.getContext()).writeDollar(mDollar);
+                mDollar.clear();
+                mCursorMoves = false;
 
             case MotionEvent.ACTION_CANCEL:
-                point = null;
+                mCurrentPos = null;
                 invalidate();
                 break;
         }
@@ -91,30 +89,21 @@ public class MyView extends View {
     protected void onDraw(@NonNull Canvas canvas) {
         super.onDraw(canvas);
 
-        if (point != null) {
-            current_pos_x = (int) point.x;
-            current_pos_y = (int) point.y;
+        if (mCurrentPos != null) {
 
-            path.lineTo(point.x, point.y);
-            canvas.drawPath(path, mPaint);
-            dollar.addPoint((int)point.x, (int)point.y);
+            mFeebackPath.lineTo(mCurrentPos.x, mCurrentPos.y);
+            canvas.drawPath(mFeebackPath, mFeedbackPaint);
 
+            mDollar.addPoint((int) mCurrentPos.x, (int) mCurrentPos.y);
 
-            dollar_drawn_path.addPoint((int)point.x, (int)point.y);
-            if (move) {
-                TemplateData data = new TemplateData();
-                int[] trianglePoints = data.trianglePoints;
-                int index_of_position = getObjectPosition(trianglePoints,(int)point.x, (int)point.y );
-                if (index_of_position != 0) { // current path on triangle
-                    start_draw_position = index_of_position;
-                    draw = true;
-                } else {
-                    draw = false;
+            if (mCursorMoves) {
+                int[] trianglePoints = mObjectData.trianglePoints;
+                int index_of_position = getObjectPosition(trianglePoints);
+                if (index_of_position != 0) { // current mpath on triangle
+                    mStartDrawPosObject = index_of_position;
                 }
-                int drawn_path[];
-
             }
-            if (draw) {
+            if (mDrawObject) {
                 drawObject(canvas);
             }
 
@@ -122,17 +111,18 @@ public class MyView extends View {
         }
     }
 
-    private int getObjectPosition(int[] trianglePoints, int x, int y) {
+    private int getObjectPosition(int[] objectPoints) {
         int threshold = 180;
         float min_distance = 10000;
         float distance_sum = 0;
         int index = 0;
-        for (int i = 0; i < trianglePoints.length; i++) {
+        
+        for (int i = 0; i < objectPoints.length; i++) {
             if ((i % 2) == 0) { // even
-                float object_x = trianglePoints[i] * scale + init_pos_x - trianglePoints[0] * scale;
-                float object_y = trianglePoints[i + 1] * scale + init_pos_y - trianglePoints[1] * scale;
-                float offset_x = Math.abs(object_x - x);
-                float offset_y = Math.abs(object_y - y);
+                float object_x = objectPoints[i] * mObjectScale + (int) mInitPos.x - objectPoints[0] * mObjectScale;
+                float object_y = objectPoints[i + 1] * mObjectScale + (int) mInitPos.y - objectPoints[1] * mObjectScale;
+                float offset_x = Math.abs(object_x - (int) mCurrentPos.x);
+                float offset_y = Math.abs(object_y - (int) mCurrentPos.y);
                 float off = offset_x + offset_y;
                 distance_sum += off;
                 if (off < min_distance) {
@@ -141,40 +131,37 @@ public class MyView extends View {
                 }
             }
         }
-        if ((distance_sum / trianglePoints.length) < threshold) {
+        if ((distance_sum / objectPoints.length) < threshold) {
+            mDrawObject = true;
             return index;
         } else {
+            mDrawObject = false;
             return 0;
         }
     }
 
-    // draw options here
+    // mDrawObject options here
     private void drawObject(Canvas canvas) {
-        Path path_feedforward = new Path();
-        Path path_prefix = new Path();
-        TemplateData data = new TemplateData();
-        int[] trianglePoints = data.trianglePoints;
+        mFeedworwardPath = new Path();
+        mPrefixPath = new Path();
+        int[] trianglePoints = mObjectData.trianglePoints;
 
         // could store tranformed_triangle
-        path_prefix.moveTo(current_pos_x, current_pos_y);
-        path_feedforward.moveTo(current_pos_x, current_pos_y);
-//        path_prefix.moveTo(trianglePoints[0] * scale + init_pos_x - trianglePoints[0] * scale, trianglePoints[1] * scale + init_pos_y - trianglePoints[1] * scale);
-//        path_feedforward.moveTo(trianglePoints[0] * scale + init_pos_x - trianglePoints[0] * scale, trianglePoints[1] * scale + init_pos_y - trianglePoints[1] * scale);
-        int threshold = 50;
-        for (int x = start_draw_position; x < trianglePoints.length; x += 2) {
-            if (x < (start_draw_position + threshold)) {
-                path_prefix.lineTo(trianglePoints[x] * scale + init_pos_x - trianglePoints[0] * scale, trianglePoints[x + 1] * scale + init_pos_y - trianglePoints[1] * scale);
+        mPrefixPath.moveTo((int) mCurrentPos.x, (int) mCurrentPos.y);
+        mFeedworwardPath.moveTo((int) mCurrentPos.x, (int) mCurrentPos.y);
+//        mPrefixPath.moveTo(trianglePoints[0] * mObjectScale + init_pos_x - trianglePoints[0] * mObjectScale, trianglePoints[1] * mObjectScale + init_pos_y - trianglePoints[1] * mObjectScale);
+//        mFeedworwardPath.moveTo(trianglePoints[0] * mObjectScale + init_pos_x - trianglePoints[0] * mObjectScale, trianglePoints[1] * mObjectScale + init_pos_y - trianglePoints[1] * mObjectScale);
+        int prefix_length = 50;
+        for (int x = mStartDrawPosObject; x < trianglePoints.length; x += 2) {
+            if (x < (mStartDrawPosObject + prefix_length)) {
+                mPrefixPath.lineTo(trianglePoints[x] * mObjectScale + (int) mInitPos.x - trianglePoints[0] * mObjectScale, trianglePoints[x + 1] * mObjectScale + (int) mInitPos.y - trianglePoints[1] * mObjectScale);
             }
-            path_feedforward.lineTo(trianglePoints[x] * scale + init_pos_x - trianglePoints[0] * scale, trianglePoints[x + 1] * scale + init_pos_y - trianglePoints[1] * scale);
+            mFeedworwardPath.lineTo(trianglePoints[x] * mObjectScale + (int) mInitPos.x - trianglePoints[0] * mObjectScale, trianglePoints[x + 1] * mObjectScale + (int) mInitPos.y - trianglePoints[1] * mObjectScale);
         }
         mObjectPaint.setColor(Color.parseColor("#ccccff"));
-        canvas.drawPath(path_feedforward, mObjectPaint);
+        canvas.drawPath(mFeedworwardPath, mObjectPaint);
         mObjectPaint.setColor(Color.parseColor("#7f7fff"));
-        canvas.drawPath(path_prefix, mObjectPaint);
+        canvas.drawPath(mPrefixPath, mObjectPaint);
     }
 
-    private boolean inObjectPath() {
-
-        return true;
-    }
 }
