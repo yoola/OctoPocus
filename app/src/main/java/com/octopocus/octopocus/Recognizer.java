@@ -78,40 +78,40 @@ public class Recognizer
 	void loadTemplatesDefault()
 	{
 		Templates.addElement(loadTemplate("triangle", TemplateData.trianglePoints));
-		Templates.addElement(loadTemplate("x", TemplateData.xPoints));
-		Templates.addElement(loadTemplate("rectangle CCW", TemplateData.rectanglePointsCCW));
-		Templates.addElement(loadTemplate("circle CCW", TemplateData.circlePointsCCW));
-		Templates.addElement(loadTemplate("check", TemplateData.checkPoints));
-		Templates.addElement(loadTemplate("caret CW", TemplateData.caretPointsCW));
-		Templates.addElement(loadTemplate("question", TemplateData.questionPoints));
-		Templates.addElement(loadTemplate("arrow", TemplateData.arrowPoints));
-		Templates.addElement(loadTemplate("leftSquareBracket", TemplateData.leftSquareBracketPoints));
-		Templates.addElement(loadTemplate("rightSquareBracket", TemplateData.rightSquareBracketPoints));
-		Templates.addElement(loadTemplate("v", TemplateData.vPoints));
-		Templates.addElement(loadTemplate("delete", TemplateData.deletePoints));	
-		Templates.addElement(loadTemplate("leftCurlyBrace", TemplateData.leftCurlyBracePoints));
-		Templates.addElement(loadTemplate("rightCurlyBrace", TemplateData.rightCurlyBracePoints));
-		Templates.addElement(loadTemplate("star", TemplateData.starPoints));
-		Templates.addElement(loadTemplate("pigTail", TemplateData.pigTailPoints));
+//		Templates.addElement(loadTemplate("x", TemplateData.xPoints));
+//		Templates.addElement(loadTemplate("rectangle CCW", TemplateData.rectanglePointsCCW));
+//		Templates.addElement(loadTemplate("circle CCW", TemplateData.circlePointsCCW));
+//		Templates.addElement(loadTemplate("check", TemplateData.checkPoints));
+//		Templates.addElement(loadTemplate("caret CW", TemplateData.caretPointsCW));
+//		Templates.addElement(loadTemplate("question", TemplateData.questionPoints));
+//		Templates.addElement(loadTemplate("arrow", TemplateData.arrowPoints));
+//		Templates.addElement(loadTemplate("leftSquareBracket", TemplateData.leftSquareBracketPoints));
+//		Templates.addElement(loadTemplate("rightSquareBracket", TemplateData.rightSquareBracketPoints));
+//		Templates.addElement(loadTemplate("v", TemplateData.vPoints));
+//		Templates.addElement(loadTemplate("delete", TemplateData.deletePoints));
+//		Templates.addElement(loadTemplate("leftCurlyBrace", TemplateData.leftCurlyBracePoints));
+//		Templates.addElement(loadTemplate("rightCurlyBrace", TemplateData.rightCurlyBracePoints));
+//		Templates.addElement(loadTemplate("star", TemplateData.starPoints));
+//		Templates.addElement(loadTemplate("pigTail", TemplateData.pigTailPoints));
 	}
 	
 	void loadTemplatesSimple()
 	{
-		Templates.addElement(loadTemplate("circle CCW", TemplateData.circlePointsCCW));
-		Templates.addElement(loadTemplate("circle CW", TemplateData.circlePointsCW));
-//		Templates.addElement(loadTemplate("rectangle CCW", TemplateData.rectanglePointsCCW));
-//		Templates.addElement(loadTemplate("rectangle CW", TemplateData.rectanglePointsCW));
-		Templates.addElement(loadTemplate("caret CCW", TemplateData.caretPointsCCW));
-		Templates.addElement(loadTemplate("caret CW", TemplateData.caretPointsCW));
-//		Templates.addElement(loadTemplate("line left", TemplateData.lineToLeftPoints));
-//		Templates.addElement(loadTemplate("line right", TemplateData.lineToRightPoints));
-		Templates.addElement(loadTemplate("question", TemplateData.questionPoints));
+//		Templates.addElement(loadTemplate("circle CCW", TemplateData.circlePointsCCW));
+//		Templates.addElement(loadTemplate("circle CW", TemplateData.circlePointsCW));
+////		Templates.addElement(loadTemplate("rectangle CCW", TemplateData.rectanglePointsCCW));
+////		Templates.addElement(loadTemplate("rectangle CW", TemplateData.rectanglePointsCW));
+//		Templates.addElement(loadTemplate("caret CCW", TemplateData.caretPointsCCW));
+//		Templates.addElement(loadTemplate("caret CW", TemplateData.caretPointsCW));
+////		Templates.addElement(loadTemplate("line left", TemplateData.lineToLeftPoints));
+////		Templates.addElement(loadTemplate("line right", TemplateData.lineToRightPoints));
+//		Templates.addElement(loadTemplate("question", TemplateData.questionPoints));
 	}
 	
 	void loadTemplatesCircles()
 	{
-		Templates.addElement(loadTemplate("circle CCW", TemplateData.circlePointsCCW));
-		Templates.addElement(loadTemplate("circle CW", TemplateData.circlePointsCW));
+//		Templates.addElement(loadTemplate("circle CCW", TemplateData.circlePointsCCW));
+//		Templates.addElement(loadTemplate("circle CW", TemplateData.circlePointsCW));
 	}
 
 	void loadTemplatesPhoto()

@@ -1,6 +1,5 @@
 package com.octopocus.octopocus;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -11,10 +10,6 @@ import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import java.util.Vector;
 
 
 public class MyView extends View {
@@ -24,9 +19,18 @@ public class MyView extends View {
     private PointF point;
     private Path path = new Path();
     public Dollar dollar = new Dollar(1);
+    public Dollar dollar_drawn_path = new Dollar(1);
+
+    private float scale = 3;
+
     private int init_pos_x;
     private int init_pos_y;
+    private int current_pos_x;
+    private int current_pos_y;
+    private int start_draw_position = 0;
     private boolean move = false;
+    private boolean draw = true;
+
 
     public MyView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -88,27 +92,89 @@ public class MyView extends View {
         super.onDraw(canvas);
 
         if (point != null) {
+            current_pos_x = (int) point.x;
+            current_pos_y = (int) point.y;
 
             path.lineTo(point.x, point.y);
             canvas.drawPath(path, mPaint);
             dollar.addPoint((int)point.x, (int)point.y);
 
-            drawObject(canvas);
+
+            dollar_drawn_path.addPoint((int)point.x, (int)point.y);
+            if (move) {
+                TemplateData data = new TemplateData();
+                int[] trianglePoints = data.trianglePoints;
+                int index_of_position = getObjectPosition(trianglePoints,(int)point.x, (int)point.y );
+                if (index_of_position != 0) { // current path on triangle
+                    start_draw_position = index_of_position;
+                    draw = true;
+                } else {
+                    draw = false;
+                }
+                int drawn_path[];
+
+            }
+            if (draw) {
+                drawObject(canvas);
+            }
 
 
         }
     }
 
+    private int getObjectPosition(int[] trianglePoints, int x, int y) {
+        int threshold = 180;
+        float min_distance = 10000;
+        float distance_sum = 0;
+        int index = 0;
+        for (int i = 0; i < trianglePoints.length; i++) {
+            if ((i % 2) == 0) { // even
+                float object_x = trianglePoints[i] * scale + init_pos_x - trianglePoints[0] * scale;
+                float object_y = trianglePoints[i + 1] * scale + init_pos_y - trianglePoints[1] * scale;
+                float offset_x = Math.abs(object_x - x);
+                float offset_y = Math.abs(object_y - y);
+                float off = offset_x + offset_y;
+                distance_sum += off;
+                if (off < min_distance) {
+                    min_distance = off;
+                    index = i;
+                }
+            }
+        }
+        if ((distance_sum / trianglePoints.length) < threshold) {
+            return index;
+        } else {
+            return 0;
+        }
+    }
+
     // draw options here
     private void drawObject(Canvas canvas) {
-        Path path_objects = new Path();
+        Path path_feedforward = new Path();
+        Path path_prefix = new Path();
         TemplateData data = new TemplateData();
         int[] trianglePoints = data.trianglePoints;
-        float scale = 3;
-        path_objects.moveTo(trianglePoints[0] * scale + init_pos_x - trianglePoints[0] * scale, trianglePoints[1] * scale + init_pos_y - trianglePoints[1] * scale);
-        for (int x = 0; x < trianglePoints.length; x += 2) {
-            path_objects.lineTo(trianglePoints[x] * scale + init_pos_x - trianglePoints[0] * scale, trianglePoints[x + 1] * scale + init_pos_y - trianglePoints[1] * scale);
+
+        // could store tranformed_triangle
+        path_prefix.moveTo(current_pos_x, current_pos_y);
+        path_feedforward.moveTo(current_pos_x, current_pos_y);
+//        path_prefix.moveTo(trianglePoints[0] * scale + init_pos_x - trianglePoints[0] * scale, trianglePoints[1] * scale + init_pos_y - trianglePoints[1] * scale);
+//        path_feedforward.moveTo(trianglePoints[0] * scale + init_pos_x - trianglePoints[0] * scale, trianglePoints[1] * scale + init_pos_y - trianglePoints[1] * scale);
+        int threshold = 50;
+        for (int x = start_draw_position; x < trianglePoints.length; x += 2) {
+            if (x < (start_draw_position + threshold)) {
+                path_prefix.lineTo(trianglePoints[x] * scale + init_pos_x - trianglePoints[0] * scale, trianglePoints[x + 1] * scale + init_pos_y - trianglePoints[1] * scale);
+            }
+            path_feedforward.lineTo(trianglePoints[x] * scale + init_pos_x - trianglePoints[0] * scale, trianglePoints[x + 1] * scale + init_pos_y - trianglePoints[1] * scale);
         }
-        canvas.drawPath(path_objects, mObjectPaint);
+        mObjectPaint.setColor(Color.parseColor("#ccccff"));
+        canvas.drawPath(path_feedforward, mObjectPaint);
+        mObjectPaint.setColor(Color.parseColor("#7f7fff"));
+        canvas.drawPath(path_prefix, mObjectPaint);
+    }
+
+    private boolean inObjectPath() {
+
+        return true;
     }
 }

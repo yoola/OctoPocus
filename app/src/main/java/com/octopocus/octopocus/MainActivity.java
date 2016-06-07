@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void writeDollar(Dollar dollar){
-        objectText.setText("Object: " + dollar.result.Name);
+        objectText.setText("Object: " + dollar.result.Name + " Score: " + dollar.result.Score);
 
     }
 }
