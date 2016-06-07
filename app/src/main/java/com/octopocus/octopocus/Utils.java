@@ -206,7 +206,7 @@ public class Utils
 	public static double DistanceAtAngle(Vector points, Template T, double theta)
 	{
 		Vector newpoints = RotateBy(points, theta);
-		return PathDistance(newpoints, T.Points);
+		return PathDistance(newpoints, T.mPoints);
 	}		
 
 //	#region Lengths and Rects	

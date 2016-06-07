@@ -163,7 +163,7 @@ public class Recognizer
 			}
 		}
 		double score = 1.0 - (b / HalfDiagonal);
-		return new Result(((Template)Templates.elementAt(t)).Name, score, t, Utils.lastTheta);
+		return new Result(((Template)Templates.elementAt(t)).mName, score, t, Utils.lastTheta);
 	};
 
 	int AddTemplate(String name, Vector points)

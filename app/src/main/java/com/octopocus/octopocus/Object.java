@@ -33,33 +33,32 @@ package com.octopocus.octopocus;
 import android.graphics.Color;
 import android.graphics.Paint;
 
-import java.util.*;
-
-public class Template
+public class Object
 {
 	String mName;
-	Vector mPoints;
+	int[] mPoints;
+	int mStartDrawPos = 0;
+	boolean mDraw;
 	Paint mPathPaint = new Paint();
 	Paint mPrefixPaint = new Paint();
 
-	Template(String name, Vector points) 
+	Object(String name, int[] points, String pathColor, String prefixColor)
 	{
 		this.mName = name;
 
-		this.mPoints = Utils.Resample(points, Recognizer.NumPoints);
-		this.mPoints = Utils.RotateToZero(this.mPoints);
-		this.mPoints = Utils.ScaleToSquare(this.mPoints, Recognizer.SquareSize);
-		this.mPoints = Utils.TranslateToOrigin(this.mPoints);
+		this.mPoints = points;
 
         this.mPathPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         this.mPathPaint.setStyle(Paint.Style.STROKE);
-        this.mPathPaint.setColor(Color.parseColor("#ccccff"));
+        this.mPathPaint.setColor(Color.parseColor(pathColor));
         this.mPathPaint.setStrokeWidth(10);
 
         this.mPrefixPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         this.mPrefixPaint.setStyle(Paint.Style.STROKE);
-        this.mPrefixPaint.setColor(Color.parseColor("#7f7fff"));
+        this.mPrefixPaint.setColor(Color.parseColor(prefixColor));
         this.mPrefixPaint.setStrokeWidth(10);
+
+		mDraw = true;
 	}
 
 
