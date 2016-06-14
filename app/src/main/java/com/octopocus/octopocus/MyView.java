@@ -19,12 +19,10 @@ public class MyView extends View {
 
     private Paint mFeedbackPaint;
     private Paint mLabelPaint;
-    private Paint mFalsePaint;
 
     private Path mFeebackPath = new Path();
     private Path mFeedforwardPath = new Path();
     private Path mPrefixPath = new Path();
-    private Path mFalsePath = new Path();
 
     private PointF mCurrentPos;
     private PointF mInitPos;
@@ -60,11 +58,6 @@ public class MyView extends View {
         mLabelPaint.setStyle(Paint.Style.STROKE);
         mLabelPaint.setStrokeWidth(2);
         mLabelPaint.setTextSize(60);
-
-        mFalsePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mFalsePaint.setStyle(Paint.Style.STROKE);
-        mFalsePaint.setColor(Color.RED);
-        mFalsePaint.setStrokeWidth(3);
     }
 
     // source:
@@ -177,13 +170,11 @@ public class MyView extends View {
 
         mFeedforwardPath = new Path();
         mPrefixPath = new Path();
-        mFalsePath = new Path();
         mFeebackPath = new Path();
 
         int[] points = object.mPoints;
 
         // could store transformed_triangle
-        mFalsePath.moveTo((int) mCurrentPos.x, (int) mCurrentPos.y);
         mFeebackPath.moveTo((int) mInitPos.x, (int) mInitPos.y);
 
 //        mPrefixPath.moveTo(points[0] * mObjectScale + init_pos_x - points[0] * mObjectScale, points[1] * mObjectScale + init_pos_y - points[1] * mObjectScale);
@@ -202,7 +193,6 @@ public class MyView extends View {
                 float y_err = mCurrentPos.y - y_pos;
                 object.mError = Math.sqrt((x_err * x_err) + (y_err * y_err));
                 mFeebackPath.lineTo(x_pos, y_pos);
-                mFalsePath.lineTo(x_pos, y_pos);
                 mPrefixPath.moveTo(x_pos, y_pos);
                 mFeedforwardPath.moveTo(x_pos, y_pos);
                 if (x == points.length - 2) {

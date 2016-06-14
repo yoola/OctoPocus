@@ -10,7 +10,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8179a943-57e6-4302-b57a-32f466a5ecd3" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/octopocus/octopocus/MainActivity.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/octopocus/octopocus/MainActivity.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/octopocus/octopocus/MyView.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/octopocus/octopocus/MyView.java" />
     </list>
     <ignored path="OctoPocus.iws" />
@@ -60,8 +59,8 @@
       <file leaf-file-name="MyView.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/octopocus/octopocus/MyView.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.3402299">
-              <caret line="49" column="111" selection-start-line="49" selection-start-column="111" selection-end-line="49" selection-end-column="111" />
+            <state vertical-scroll-proportion="-1.4804598">
+              <caret line="194" column="50" selection-start-line="194" selection-start-column="50" selection-end-line="194" selection-end-column="50" />
               <folding />
             </state>
           </provider>
@@ -1754,8 +1753,8 @@
         <option value="$PROJECT_DIR$/app/src/main/java/com/octopocus/octopocus/Template.java" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/octopocus/octopocus/Object.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/octopocus/octopocus/MyView.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/octopocus/octopocus/MainActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/octopocus/octopocus/MyView.java" />
       </list>
     </option>
   </component>
@@ -2551,6 +2550,14 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/octopocus/octopocus/TemplateData.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="39" column="62" selection-start-line="39" selection-start-column="62" selection-end-line="39" selection-end-column="62" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/octopocus/octopocus/MainActivity.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -2561,18 +2568,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/octopocus/octopocus/TemplateData.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="39" column="62" selection-start-line="39" selection-start-column="62" selection-end-line="39" selection-end-column="62" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/octopocus/octopocus/MyView.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.3402299">
-          <caret line="49" column="111" selection-start-line="49" selection-start-column="111" selection-end-line="49" selection-end-column="111" />
+        <state vertical-scroll-proportion="-1.4804598">
+          <caret line="194" column="50" selection-start-line="194" selection-start-column="50" selection-end-line="194" selection-end-column="50" />
           <folding />
         </state>
       </provider>
