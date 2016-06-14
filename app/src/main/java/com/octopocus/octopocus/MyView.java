@@ -92,6 +92,7 @@ public class MyView extends View {
                 for (String object : mObjects.keySet()) {
                     if (mObjects.get(object).mExcecute) {
                         System.out.println(mObjects.get(object).mName + " EXCECUTE!!!!!!!!!!!!!!");
+                        ((MainActivity) this.getContext()).excecuteCommand(mObjects.get(object).mName);
                     }
                 }
                 clear();

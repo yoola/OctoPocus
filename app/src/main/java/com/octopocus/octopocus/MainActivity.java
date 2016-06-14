@@ -21,4 +21,13 @@ public class MainActivity extends AppCompatActivity {
         objectText.setText("Object: " + dollar.result.Name + " Score: " + dollar.result.Score);
 
     }
+
+    public void excecuteCommand(String name) {
+        if (name.equals("triangle")) {
+            // instructions
+        }else if (name.equals("check")) {
+            // ...
+        }
+    }
+
 }
