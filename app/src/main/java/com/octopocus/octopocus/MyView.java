@@ -5,7 +5,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.PathMeasure;
 import android.graphics.PointF;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
@@ -19,6 +18,7 @@ import java.util.Map;
 public class MyView extends View {
 
     private Paint mFeedbackPaint;
+    private Paint mLabelPaint;
     private Paint mFalsePaint;
 
     private Path mFeebackPath = new Path();
@@ -56,6 +56,11 @@ public class MyView extends View {
         mFeedbackPaint.setStyle(Paint.Style.STROKE);
         mFeedbackPaint.setStrokeWidth(10);
 
+        mLabelPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mLabelPaint.setStyle(Paint.Style.STROKE);
+        mLabelPaint.setStrokeWidth(2);
+        mLabelPaint.setTextSize(60);
+
         mFalsePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mFalsePaint.setStyle(Paint.Style.STROKE);
         mFalsePaint.setColor(Color.RED);
@@ -84,6 +89,11 @@ public class MyView extends View {
             case MotionEvent.ACTION_UP:
                 mDollar.recognize();
                 ((MainActivity) this.getContext()).writeDollar(mDollar);
+                for (String object : mObjects.keySet()) {
+                    if (mObjects.get(object).mExcecute) {
+                        System.out.println(mObjects.get(object).mName + " EXCECUTE!!!!!!!!!!!!!!");
+                    }
+                }
                 clear();
 
             case MotionEvent.ACTION_CANCEL:
@@ -194,10 +204,16 @@ public class MyView extends View {
                 mFalsePath.lineTo(x_pos, y_pos);
                 mPrefixPath.moveTo(x_pos, y_pos);
                 mFeedforwardPath.moveTo(x_pos, y_pos);
+                if (x == points.length - 2) {
+                    object.mExcecute = true;
+                }
 
             } else if (x <= index) {
                 mPrefixPath.lineTo(x_pos, y_pos);
-                mFeedforwardPath.moveTo(x_pos, y_pos);
+                if (x == index) {
+                    canvas.drawText(object.mName, x_pos, y_pos, mLabelPaint);
+                    mFeedforwardPath.moveTo(x_pos, y_pos);
+                }
 
             } else {
                 mFeedforwardPath.lineTo(x_pos, y_pos);
@@ -241,6 +257,7 @@ public class MyView extends View {
         mCursorMoves = false;
         for (String object : mObjects.keySet()) {
             mObjects.get(object).mStartDrawPos = 0;
+            mObjects.get(object).mExcecute = false;
         }
     }
 

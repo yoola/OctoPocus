@@ -40,7 +40,7 @@ public class Object
 	int mStartDrawPos = 0;
 	int mThickness = 0;
 	double mError = 0.0;
-	boolean mDraw;
+	boolean mExcecute;
 	Paint mPathPaint = new Paint();
 	Paint mPrefixPaint = new Paint();
 
@@ -62,7 +62,7 @@ public class Object
         this.mPrefixPaint.setColor(Color.parseColor(prefixColor));
         this.mPrefixPaint.setStrokeWidth(thickness);
 
-		mDraw = true;
+		mExcecute = false;
 	}
 
 	public void setThickness(int thickness) {
