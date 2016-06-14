@@ -38,30 +38,36 @@ public class Object
 	String mName;
 	int[] mPoints;
 	int mStartDrawPos = 0;
+	int mThickness = 0;
+	double mError = 0.0;
 	boolean mDraw;
 	Paint mPathPaint = new Paint();
 	Paint mPrefixPaint = new Paint();
 
-	Object(String name, int[] points, String pathColor, String prefixColor)
+	Object(String name, int[] points, String pathColor, String prefixColor, int thickness)
 	{
 		this.mName = name;
 
 		this.mPoints = points;
 
+		mThickness = thickness;
+
         this.mPathPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         this.mPathPaint.setStyle(Paint.Style.STROKE);
         this.mPathPaint.setColor(Color.parseColor(pathColor));
-        this.mPathPaint.setStrokeWidth(10);
+        this.mPathPaint.setStrokeWidth(thickness);
 
         this.mPrefixPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         this.mPrefixPaint.setStyle(Paint.Style.STROKE);
         this.mPrefixPaint.setColor(Color.parseColor(prefixColor));
-        this.mPrefixPaint.setStrokeWidth(10);
+        this.mPrefixPaint.setStrokeWidth(thickness);
 
 		mDraw = true;
 	}
 
-
-
-
+	public void setThickness(int thickness) {
+		this.mThickness = thickness;
+		this.mPathPaint.setStrokeWidth(thickness);
+		this.mPrefixPaint.setStrokeWidth(thickness);
+	}
 }

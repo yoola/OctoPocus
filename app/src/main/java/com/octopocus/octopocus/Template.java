@@ -39,8 +39,6 @@ public class Template
 {
 	String mName;
 	Vector mPoints;
-	Paint mPathPaint = new Paint();
-	Paint mPrefixPaint = new Paint();
 
 	Template(String name, Vector points) 
 	{
@@ -50,16 +48,6 @@ public class Template
 		this.mPoints = Utils.RotateToZero(this.mPoints);
 		this.mPoints = Utils.ScaleToSquare(this.mPoints, Recognizer.SquareSize);
 		this.mPoints = Utils.TranslateToOrigin(this.mPoints);
-
-        this.mPathPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        this.mPathPaint.setStyle(Paint.Style.STROKE);
-        this.mPathPaint.setColor(Color.parseColor("#ccccff"));
-        this.mPathPaint.setStrokeWidth(10);
-
-        this.mPrefixPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        this.mPrefixPaint.setStyle(Paint.Style.STROKE);
-        this.mPrefixPaint.setColor(Color.parseColor("#7f7fff"));
-        this.mPrefixPaint.setStrokeWidth(10);
 	}
 
 
