@@ -7,6 +7,7 @@ import android.graphics.Path;
 import android.graphics.PointF;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -34,6 +35,7 @@ public class MyView extends View {
     private int mPrefixLength = 1200;
 
     private boolean mCursorMoves = false;
+    private Object mSelectedObject = null;
 
 
 
@@ -44,8 +46,9 @@ public class MyView extends View {
     }
 
     private void initMenu() {
-        mObjects.put("triangle", new Object("triangle", mObjectData.trianglePoints, "#ccccff", "#7f7fff", 10));
-        mObjects.put("check", new Object("check", mObjectData.checkPoints, "#8ae32b", "#208a18", 10));
+        mObjects.put("Copy", new Object("Copy", mObjectData.trianglePoints, "#ccccff", "#7f7fff", 10));
+        mObjects.put("Paste", new Object("Paste", mObjectData.checkPoints, "#8ae32b", "#208a18", 10));
+        mObjects.put("Select", new Object("Select", mObjectData.caretPointsCW, "#FE642E", "#B43104", 10));
     }
 
     private void initPaint() {
@@ -85,6 +88,10 @@ public class MyView extends View {
                     if (mObjects.get(object).mExcecute) {
                         System.out.println(mObjects.get(object).mName + " EXCECUTE!!!!!!!!!!!!!!");
                         ((MainActivity) this.getContext()).excecuteCommand(mObjects.get(object).mName);
+//                        if (mSelectedObject != null) {
+                            mSelectedObject = mObjects.get(object);
+                            invalidate();
+//                        }
                     }
                 }
                 clear();
@@ -104,34 +111,47 @@ public class MyView extends View {
     protected void onDraw(@NonNull Canvas canvas) {
         super.onDraw(canvas);
 
-        if (mCurrentPos != null) {
+        if (mSelectedObject != null) {
+            DisplayMetrics metrics = ((MainActivity) this.getContext()).getResources().getDisplayMetrics();
+            int width = metrics.widthPixels;
+            int height = metrics.heightPixels;
+            canvas.drawText(mSelectedObject.mName, (int) (width * 0.5), (int) (height * 0.5), mLabelPaint);
+//            try {
+//                Thread.sleep(1000);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+            mSelectedObject = null;
+        } else {
+            if (mCurrentPos != null) {
 
-            mDollar.addPoint((int) mCurrentPos.x, (int) mCurrentPos.y);
+                mDollar.addPoint((int) mCurrentPos.x, (int) mCurrentPos.y);
 
-            String min_err_name = "";
-            if (mCursorMoves) {
-                double min_error = 10000;
-                for (String object : mObjects.keySet()) {
-                    Object obj = mObjects.get(object);
-                    System.out.println(obj.mName);
-                    setStartPosition(obj); // current start position in object
-                    System.out.println(" start: " + obj.mStartDrawPos);
-                    setError(obj);
-                    if (obj.mError < min_error) {
-                        min_error = obj.mError;
-                        min_err_name = obj.mName;
+                String min_err_name = "";
+                if (mCursorMoves) {
+                    double min_error = 10000;
+                    for (String object : mObjects.keySet()) {
+                        Object obj = mObjects.get(object);
+    //                    System.out.println(obj.mName);
+                        setStartPosition(obj); // current start position in object
+    //                    System.out.println(" start: " + obj.mStartDrawPos);
+                        setError(obj);
+                        if (obj.mError < min_error) {
+                            min_error = obj.mError;
+                            min_err_name = obj.mName;
+                        }
+
                     }
-
                 }
-            }
-            for (String object : mObjects.keySet()) {
-                System.out.println("min err: " + min_err_name);
-                if (mObjects.get(object).mName != min_err_name) {
-                    mObjects.get(object).mStartDrawPos = 0;
+                for (String object : mObjects.keySet()) {
+    //                System.out.println("min err: " + min_err_name);
+                    if (mObjects.get(object).mName != min_err_name) {
+                        mObjects.get(object).mStartDrawPos = 0;
+                    }
+                    drawObject(canvas, mObjects.get(object));
                 }
-                drawObject(canvas, mObjects.get(object));
-            }
 
+            }
 
         }
     }
@@ -186,7 +206,7 @@ public class MyView extends View {
         }
 
         object.setThickness(thickness);
-        System.out.println("Thickness2: " + thickness);
+//        System.out.println("Thickness2: " + thickness);
     }
 
     // mDrawObject options here
@@ -220,8 +240,11 @@ public class MyView extends View {
                 mFeebackPath.lineTo(x_pos, y_pos);
                 mPrefixPath.moveTo(x_pos, y_pos);
                 mFeedforwardPath.moveTo(x_pos, y_pos);
-                if (x == points.length - 2) {
+                if (object.mStartDrawPos >= points.length - 10) {
                     object.mExcecute = true;
+                    mSelectedObject = object;
+                } else {
+                    object.mExcecute = false;
                 }
 
             } else if (x <= index) {
