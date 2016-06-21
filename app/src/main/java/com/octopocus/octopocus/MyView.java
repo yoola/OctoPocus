@@ -2,7 +2,6 @@ package com.octopocus.octopocus;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
@@ -113,19 +112,20 @@ public class MyView extends View {
             if (mCursorMoves) {
                 double min_error = 10000;
                 for (String object : mObjects.keySet()) {
-                    int[] objectPoints = mObjects.get(object).mPoints;
-                    int index_of_position = getNearestObjectPosToCursor(objectPoints, object);
-                    if (index_of_position != 0) { // current mpath on triangle
-                        mObjects.get(object).mStartDrawPos = index_of_position;
-                    }
-                    if (mObjects.get(object).mError < min_error) {
-                        min_error = mObjects.get(object).mError;
-                        min_err_name = mObjects.get(object).mName;
+                    Object obj = mObjects.get(object);
+                    System.out.println(obj.mName);
+                    setStartPosition(obj); // current start position in object
+                    System.out.println(" start: " + obj.mStartDrawPos);
+                    setError(obj);
+                    if (obj.mError < min_error) {
+                        min_error = obj.mError;
+                        min_err_name = obj.mName;
                     }
 
                 }
             }
             for (String object : mObjects.keySet()) {
+                System.out.println("min err: " + min_err_name);
                 if (mObjects.get(object).mName != min_err_name) {
                     mObjects.get(object).mStartDrawPos = 0;
                 }
@@ -136,37 +136,62 @@ public class MyView extends View {
         }
     }
 
+    private void setError(Object obj) {
+        int[] points = obj.mPoints;
+        int i = obj.mStartDrawPos;
+
+        float x_pos = points[i] * mObjectScale + (int) mInitPos.x - points[0] * mObjectScale; // objects points to global space
+        float y_pos = points[i + 1] * mObjectScale + (int) mInitPos.y - points[1] * mObjectScale; // objects points to global space
+
+        float x_err = mCurrentPos.x - x_pos;
+        float y_err = mCurrentPos.y - y_pos;
+        obj.mError = Math.sqrt((x_err * x_err) + (y_err * y_err));
+    }
+
     // which point (index) in the object lies nearest to the cursor
-    private int getNearestObjectPosToCursor(int[] objectPoints, String objectName) {
-        int threshold = 900;
-        float min_distance = 10000;
+    private void setStartPosition(Object object) {
+        int[] points = object.mPoints;
+        int threshold = 500;
+        double min_distance = 10000;
         float distance_sum = 0;
         int index = 0;
 
-        for (int i = 0; i < objectPoints.length; i += 2) {
-            float object_x = objectPoints[i] * mObjectScale + (int) mInitPos.x - objectPoints[0] * mObjectScale;
-            float object_y = objectPoints[i + 1] * mObjectScale + (int) mInitPos.y - objectPoints[1] * mObjectScale;
+        int prefix_end_pos = getObjectPosOfPrefix(object);
+        for (int i = object.mStartDrawPos; i < prefix_end_pos; i += 2) {
+            float object_x = points[i] * mObjectScale + (int) mInitPos.x - points[0] * mObjectScale; // objects points to global space
+            float object_y = points[i + 1] * mObjectScale + (int) mInitPos.y - points[1] * mObjectScale; // objects points to global space
+
             float offset_x = Math.abs(object_x - (int) mCurrentPos.x);
             float offset_y = Math.abs(object_y - (int) mCurrentPos.y);
-            float off = offset_x + offset_y;
-            distance_sum += off;
-            if (off < min_distance) {
-                min_distance = off;
+
+            double dist = Math.sqrt(offset_x * offset_x + offset_y * offset_y);
+            distance_sum += dist;
+
+            if (dist < min_distance) {
+                min_distance = dist;
                 index = i;
             }
+
         }
-//        System.out.println((int) (threshold / (distance_sum / objectPoints.length)));
-        mObjects.get(objectName).setThickness((int) (threshold / (distance_sum / objectPoints.length)));
-        if (mObjects.get(objectName).mThickness >= 4) {
-            return index;
-        } else {
-            mObjects.get(objectName).setThickness(0);
-            return 0;
+
+        object.mStartDrawPos = index;
+        // triangle is not shown when following the first part of check
+        int maxThickness = 20;
+        int thickness = (int)  (threshold / (distance_sum / ((prefix_end_pos) - object.mStartDrawPos + 1) ));
+        if (thickness > 1000 || thickness < 4) {
+            thickness = 0;
+            object.mStartDrawPos = 0;
+        } else if (thickness > maxThickness) {
+            thickness = maxThickness;
         }
+
+        object.setThickness(thickness);
+        System.out.println("Thickness2: " + thickness);
     }
 
     // mDrawObject options here
     private void drawObject(Canvas canvas, Object object) {
+
 
         mFeedforwardPath = new Path();
         mPrefixPath = new Path();
@@ -189,9 +214,9 @@ public class MyView extends View {
                 mFeedbackPaint.setStrokeWidth(object.mThickness);
 
             } else if (x == object.mStartDrawPos) {
-                float x_err = mCurrentPos.x - x_pos;
-                float y_err = mCurrentPos.y - y_pos;
-                object.mError = Math.sqrt((x_err * x_err) + (y_err * y_err));
+//                float x_err = mCurrentPos.x - x_pos;
+//                float y_err = mCurrentPos.y - y_pos;
+//                object.mError = Math.sqrt((x_err * x_err) + (y_err * y_err));
                 mFeebackPath.lineTo(x_pos, y_pos);
                 mPrefixPath.moveTo(x_pos, y_pos);
                 mFeedforwardPath.moveTo(x_pos, y_pos);
@@ -210,7 +235,7 @@ public class MyView extends View {
                 mFeedforwardPath.lineTo(x_pos, y_pos);
             }
         }
-
+        // noch nicht richtig!!!
         canvas.drawPath(mFeebackPath, mFeedbackPaint);
 //        canvas.drawPath(mFalsePath, mFalsePaint);
         if (object.mThickness != 0) {
@@ -247,8 +272,11 @@ public class MyView extends View {
         mDollar.clear();
         mCursorMoves = false;
         for (String object : mObjects.keySet()) {
-            mObjects.get(object).mStartDrawPos = 0;
-            mObjects.get(object).mExcecute = false;
+            Object obj = mObjects.get(object);
+            obj.mStartDrawPos = 0;
+            obj.mExcecute = false;
+            obj.mError = 0.0;
+            obj.setThickness(10);
         }
     }
 

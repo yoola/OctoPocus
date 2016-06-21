@@ -7,12 +7,15 @@ import android.widget.TextView;
 public class MainActivity extends AppCompatActivity {
 
     private TextView objectText;
+    private TextView text;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         objectText = (TextView) findViewById(R.id.object_name);
+        text = (TextView) findViewById(R.id.textView);
+        //text.
     }
 
 

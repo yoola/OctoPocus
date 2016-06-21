@@ -39,7 +39,7 @@ public class Object
 	int[] mPoints;
 	int mStartDrawPos = 0;
 	int mThickness = 0;
-	double mError = 0.0;
+	double mError = 0.0; // object with smallest error gets drawn
 	boolean mExcecute;
 	Paint mPathPaint = new Paint();
 	Paint mPrefixPaint = new Paint();
