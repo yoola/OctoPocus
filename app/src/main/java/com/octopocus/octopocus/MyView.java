@@ -11,8 +11,11 @@ import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 
 public class MyView extends View {
@@ -35,7 +38,12 @@ public class MyView extends View {
     private int mPrefixLength = 1200;
 
     private boolean mCursorMoves = false;
+    private boolean mTouchUp = false;
+    private boolean mSaveNewPath = false;
     private Object mSelectedObject = null;
+
+    private List<Integer> newPath = new ArrayList<>();
+    private String mNewObjectName = "";
 
 
 
@@ -46,9 +54,17 @@ public class MyView extends View {
     }
 
     private void initMenu() {
-        mObjects.put("Copy", new Object("Copy", mObjectData.trianglePoints, "#ccccff", "#7f7fff", 10));
+        mObjects.put("Copy", new Object("Copy", mObjectData.copyPoints, "#ccccff", "#7f7fff", 10));
+        mObjects.put("New Path: Copy", new Object("New Path: Copy", mObjectData.newCopyPath, "#ccccff", "#7f7fff", 10));
+
         mObjects.put("Paste", new Object("Paste", mObjectData.checkPoints, "#8ae32b", "#208a18", 10));
+        mObjects.put("New Path: Paste", new Object("New Path: Paste", mObjectData.newPastePath, "#ccccff", "#7f7fff", 10));
+
         mObjects.put("Select", new Object("Select", mObjectData.caretPointsCW, "#FE642E", "#B43104", 10));
+        mObjects.put("New Path: Select", new Object("New Path: Select", mObjectData.newSelectPath, "#ccccff", "#7f7fff", 10));
+
+        mObjects.put("Cut", new Object("Cut", mObjectData.caretPointsCW2, "#ccccff", "#7f7fff", 10));
+        mObjects.put("New Path: Cut", new Object("New Path: Cut", mObjectData.newCutPath, "#ccccff", "#7f7fff", 10));
     }
 
     private void initPaint() {
@@ -72,6 +88,7 @@ public class MyView extends View {
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
+                mTouchUp = false;
                 mCurrentPos = new PointF(x, y);
                 mInitPos = new PointF(x, y);
                 invalidate();
@@ -82,14 +99,37 @@ public class MyView extends View {
                 invalidate();
                 break;
             case MotionEvent.ACTION_UP:
-                mDollar.recognize();
-                ((MainActivity) this.getContext()).writeDollar(mDollar);
-                for (String object : mObjects.keySet()) {
-                    if (mObjects.get(object).mExcecute) {
-                        System.out.println(mObjects.get(object).mName + " EXCECUTE!!!!!!!!!!!!!!");
-                        ((MainActivity) this.getContext()).excecuteCommand(mObjects.get(object).mName);
+                //mDollar.recognize();
+                //((MainActivity) this.getContext()).writeDollar(mDollar);
+                if (mSaveNewPath) {
+                    System.out.println("Hallo");
+                    Object object = mObjects.get(mNewObjectName);
+                    setNewPath(object);
+                    mSaveNewPath = false;
+                }
+
+                for (String objectName : mObjects.keySet()) {
+                    Object object = mObjects.get(objectName);
+                    if (object.mExcecute) {
+                        System.out.println(object.mName + " EXCECUTE!!!!!!!!!!!!!!");
+                        ((MainActivity) this.getContext()).excecuteCommand(object.mName);
+                        if (object.mName.length() < 10) {
+                            mSaveNewPath = false;
+                        } else {
+                            String substring = object.mName.substring(0, 10);
+                            System.out.println(substring + "hi");
+                            if (substring.equals("New Path: ")) {
+                                mSaveNewPath = true;
+                                String substringName = object.mName.substring(10, object.mName.length());
+                                System.out.println(substringName);
+                                mNewObjectName = substringName;
+                            } else {
+                                mSaveNewPath = false;
+                            }
+                        }
 //                        if (mSelectedObject != null) {
-                            mSelectedObject = mObjects.get(object);
+                            mSelectedObject = object;
+                            mTouchUp = true;
                             invalidate();
 //                        }
                     }
@@ -105,47 +145,51 @@ public class MyView extends View {
     }
 
 
+    private void setNewPath(Object object) {
+        int[] points = new int[newPath.size()];
+        for (int i = 0; i < newPath.size(); i++) {
+            points[i] = newPath.get(i);
+        }
+
+        object.mPoints = points;
+        System.out.println("New object");
+    }
 
 
     @Override
     protected void onDraw(@NonNull Canvas canvas) {
         super.onDraw(canvas);
 
-        if (mSelectedObject != null) {
-            DisplayMetrics metrics = ((MainActivity) this.getContext()).getResources().getDisplayMetrics();
-            int width = metrics.widthPixels;
-            int height = metrics.heightPixels;
-            canvas.drawText(mSelectedObject.mName, (int) (width * 0.5), (int) (height * 0.5), mLabelPaint);
-//            try {
-//                Thread.sleep(1000);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
+        if (mSelectedObject != null && mTouchUp) {
+            int offset = (int) (mSelectedObject.mName.length() / 2);
+            int width = (int) (this.getWidth() / 2) - (offset * 20);
+            int height = (int) (this.getHeight() / 2) - offset;
+            canvas.drawText(mSelectedObject.mName, width, height, mLabelPaint);
             mSelectedObject = null;
         } else {
+
             if (mCurrentPos != null) {
+                // mDollar.addPoint((int) mCurrentPos.x, (int) mCurrentPos.y);
 
-                mDollar.addPoint((int) mCurrentPos.x, (int) mCurrentPos.y);
+                if (mSaveNewPath) {
+                    int x_local = (int)(mCurrentPos.x / mObjectScale);
+                    int y_local = (int)(mCurrentPos.y / mObjectScale);
+//
+                    newPath.add(x_local);
+                    newPath.add(y_local);
+                    System.out.println(x_local + "," + y_local);
 
-                String min_err_name = "";
+                }
+
                 if (mCursorMoves) {
-                    double min_error = 10000;
                     for (String object : mObjects.keySet()) {
                         Object obj = mObjects.get(object);
-    //                    System.out.println(obj.mName);
                         setStartPosition(obj); // current start position in object
-    //                    System.out.println(" start: " + obj.mStartDrawPos);
                         setError(obj);
-                        if (obj.mError < min_error) {
-                            min_error = obj.mError;
-                            min_err_name = obj.mName;
-                        }
-
                     }
                 }
                 for (String object : mObjects.keySet()) {
-    //                System.out.println("min err: " + min_err_name);
-                    if (mObjects.get(object).mName != min_err_name) {
+                    if (mObjects.get(object).mError > 150) {
                         mObjects.get(object).mStartDrawPos = 0;
                     }
                     drawObject(canvas, mObjects.get(object));
@@ -222,8 +266,6 @@ public class MyView extends View {
         // could store transformed_triangle
         mFeebackPath.moveTo((int) mInitPos.x, (int) mInitPos.y);
 
-//        mPrefixPath.moveTo(points[0] * mObjectScale + init_pos_x - points[0] * mObjectScale, points[1] * mObjectScale + init_pos_y - points[1] * mObjectScale);
-//        mFeedworwardPath.moveTo(points[0] * mObjectScale + init_pos_x - points[0] * mObjectScale, points[1] * mObjectScale + init_pos_y - points[1] * mObjectScale);
 
         int index = getObjectPosOfPrefix(object);
         for (int x = 0; x < points.length; x += 2) {
@@ -243,6 +285,7 @@ public class MyView extends View {
                 if (object.mStartDrawPos >= points.length - 10) {
                     object.mExcecute = true;
                     mSelectedObject = object;
+                    //mSelectedText = ;
                 } else {
                     object.mExcecute = false;
                 }
@@ -294,6 +337,7 @@ public class MyView extends View {
     private void clear() {
         mDollar.clear();
         mCursorMoves = false;
+        newPath = new ArrayList<>();
         for (String object : mObjects.keySet()) {
             Object obj = mObjects.get(object);
             obj.mStartDrawPos = 0;

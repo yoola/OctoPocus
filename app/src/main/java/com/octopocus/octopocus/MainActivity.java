@@ -39,16 +39,18 @@ public class MainActivity extends AppCompatActivity {
     public void excecuteCommand(String name) {
         String text = editText.getText().toString();
         if (name.equals("Copy")) {
-            System.out.println("Copy");
-            clip = ClipData.newPlainText("simple text", text);
-            clipboardManager.setPrimaryClip(clip);
+            if (text != null && text != "") {
+                System.out.println("Copy " + text);
+                clip = ClipData.newPlainText("simple text", text);
+                clipboardManager.setPrimaryClip(clip);
+            }
             // instructions
         } else if (name.equals("Paste")) {
             System.out.println("Paste");
 
             ClipData.Item item = clipboardManager.getPrimaryClip().getItemAt(0);
             String pasteData = item.getText().toString();
-            if (pasteData != null) {
+            if (pasteData != null || pasteData == "") {
 
                 String newText = "";
 
@@ -77,5 +79,4 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
-
 }

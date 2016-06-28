@@ -77,7 +77,7 @@ public class Recognizer
 	
 	void loadTemplatesDefault()
 	{
-		Templates.addElement(loadTemplate("triangle", TemplateData.trianglePoints));
+		Templates.addElement(loadTemplate("triangle", TemplateData.copyPoints));
 //		Templates.addElement(loadTemplate("x", TemplateData.xPoints));
 //		Templates.addElement(loadTemplate("rectangle CCW", TemplateData.rectanglePointsCCW));
 //		Templates.addElement(loadTemplate("circle CCW", TemplateData.circlePointsCCW));
