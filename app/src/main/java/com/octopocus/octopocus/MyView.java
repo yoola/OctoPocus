@@ -2,12 +2,12 @@ package com.octopocus.octopocus;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -15,34 +15,32 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 
 public class MyView extends View {
 
     private Paint mFeedbackPaint;
-    private Paint mLabelPaint;
+    private Paint mNewPaint;
 
     private Path mFeebackPath = new Path();
     private Path mFeedforwardPath = new Path();
     private Path mPrefixPath = new Path();
+    private Path mNewPath = new Path();
 
     private PointF mCurrentPos;
     private PointF mInitPos;
 
     Map<String, Object> mObjects = new HashMap<>();
     TemplateData mObjectData = new TemplateData();
-    public Dollar mDollar = new Dollar(1);
 
     private float mObjectScale = 3; // Scale of objects
-    private int mPrefixLength = 1200;
 
-    private boolean mCursorMoves = false;
     private boolean mTouchUp = false;
+    private boolean mMoving = false;
     private boolean mSaveNewPath = false;
     private Object mSelectedObject = null;
 
-    private List<Integer> newPath = new ArrayList<>();
+    private List<Float> newPath = new ArrayList<>();
     private String mNewObjectName = "";
 
 
@@ -54,17 +52,17 @@ public class MyView extends View {
     }
 
     private void initMenu() {
-        mObjects.put("Copy", new Object("Copy", mObjectData.copyPoints, "#ccccff", "#7f7fff", 10));
-        mObjects.put("New Path: Copy", new Object("New Path: Copy", mObjectData.newCopyPath, "#ccccff", "#7f7fff", 10));
+        mObjects.put("Copy", new Object("Copy", mObjectData.copyPoints, "#ccccff", "#7f7fff"));
+        mObjects.put("New Path: Copy", new Object("New Path: Copy", mObjectData.newCopyPath, "#7a7a7a", "#3b3b3b"));
 
-        mObjects.put("Paste", new Object("Paste", mObjectData.checkPoints, "#8ae32b", "#208a18", 10));
-        mObjects.put("New Path: Paste", new Object("New Path: Paste", mObjectData.newPastePath, "#ccccff", "#7f7fff", 10));
+        mObjects.put("Paste", new Object("Paste", mObjectData.checkPoints, "#8ae32b", "#208a18"));
+        mObjects.put("New Path: Paste", new Object("New Path: Paste", mObjectData.newPastePath, "#7a7a7a", "#3b3b3b"));
 
-        mObjects.put("Select", new Object("Select", mObjectData.caretPointsCW, "#FE642E", "#B43104", 10));
-        mObjects.put("New Path: Select", new Object("New Path: Select", mObjectData.newSelectPath, "#ccccff", "#7f7fff", 10));
+        mObjects.put("Select", new Object("Select", mObjectData.caretPointsCW, "#FE642E", "#B43104"));
+        mObjects.put("New Path: Select", new Object("New Path: Select", mObjectData.newSelectPath, "#7a7a7a", "#3b3b3b"));
 
-        mObjects.put("Cut", new Object("Cut", mObjectData.caretPointsCW2, "#ccccff", "#7f7fff", 10));
-        mObjects.put("New Path: Cut", new Object("New Path: Cut", mObjectData.newCutPath, "#ccccff", "#7f7fff", 10));
+        mObjects.put("Cut", new Object("Cut", mObjectData.caretPointsCW2,"#c19465", "#513211"));
+        mObjects.put("New Path: Cut", new Object("New Path: Cut", mObjectData.newCutPath, "#7a7a7a", "#3b3b3b"));
     }
 
     private void initPaint() {
@@ -72,10 +70,11 @@ public class MyView extends View {
         mFeedbackPaint.setStyle(Paint.Style.STROKE);
         mFeedbackPaint.setStrokeWidth(10);
 
-        mLabelPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mLabelPaint.setStyle(Paint.Style.STROKE);
-        mLabelPaint.setStrokeWidth(2);
-        mLabelPaint.setTextSize(60);
+        mNewPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mNewPaint.setColor(Color.parseColor("#7A7A7A"));
+        mNewPaint.setStyle(Paint.Style.STROKE);
+        mNewPaint.setStrokeWidth(10);
+        mNewPaint.setTextSize(40);
     }
 
     // source:
@@ -88,52 +87,24 @@ public class MyView extends View {
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
+                //mSelectedObject.mPathPaint.setStrokeWidth(10);
+                mSelectedObject = null;
                 mTouchUp = false;
-                mCurrentPos = new PointF(x, y);
+
                 mInitPos = new PointF(x, y);
+                mCurrentPos = new PointF(x, y);
+                mNewPath = new Path();
+                mNewPath.moveTo((int) mInitPos.x, (int) mInitPos.y);
                 invalidate();
                 break;
+
             case MotionEvent.ACTION_MOVE:
                 mCurrentPos.set(x, y);
-                mCursorMoves = true;
+                mMoving = true;
                 invalidate();
                 break;
-            case MotionEvent.ACTION_UP:
-                //mDollar.recognize();
-                //((MainActivity) this.getContext()).writeDollar(mDollar);
-                if (mSaveNewPath) {
-                    System.out.println("Hallo");
-                    Object object = mObjects.get(mNewObjectName);
-                    setNewPath(object);
-                    mSaveNewPath = false;
-                }
 
-                for (String objectName : mObjects.keySet()) {
-                    Object object = mObjects.get(objectName);
-                    if (object.mExcecute) {
-                        System.out.println(object.mName + " EXCECUTE!!!!!!!!!!!!!!");
-                        ((MainActivity) this.getContext()).excecuteCommand(object.mName);
-                        if (object.mName.length() < 10) {
-                            mSaveNewPath = false;
-                        } else {
-                            String substring = object.mName.substring(0, 10);
-                            System.out.println(substring + "hi");
-                            if (substring.equals("New Path: ")) {
-                                mSaveNewPath = true;
-                                String substringName = object.mName.substring(10, object.mName.length());
-                                System.out.println(substringName);
-                                mNewObjectName = substringName;
-                            } else {
-                                mSaveNewPath = false;
-                            }
-                        }
-//                        if (mSelectedObject != null) {
-                            mSelectedObject = object;
-                            mTouchUp = true;
-                            invalidate();
-//                        }
-                    }
-                }
+            case MotionEvent.ACTION_UP:
                 clear();
 
             case MotionEvent.ACTION_CANCEL:
@@ -145,206 +116,169 @@ public class MyView extends View {
     }
 
 
-    private void setNewPath(Object object) {
-        int[] points = new int[newPath.size()];
-        for (int i = 0; i < newPath.size(); i++) {
-            points[i] = newPath.get(i);
-        }
-
-        object.mPoints = points;
-        System.out.println("New object");
-    }
-
-
     @Override
     protected void onDraw(@NonNull Canvas canvas) {
         super.onDraw(canvas);
 
+        // if path was selected display name
         if (mSelectedObject != null && mTouchUp) {
-            int offset = (int) (mSelectedObject.mName.length() / 2);
-            int width = (int) (this.getWidth() / 2) - (offset * 20);
-            int height = (int) (this.getHeight() / 2) - offset;
-            canvas.drawText(mSelectedObject.mName, width, height, mLabelPaint);
-            mSelectedObject = null;
+            int offset = (mSelectedObject.getName().length() / 2);
+            int width = (this.getWidth() / 2) - (offset * 20);
+            int height = (this.getHeight() / 2) - offset;
+            canvas.drawText(mSelectedObject.getName(), width, height, mSelectedObject.getTextPaint());
+
         } else {
 
             if (mCurrentPos != null) {
-                // mDollar.addPoint((int) mCurrentPos.x, (int) mCurrentPos.y);
 
-                if (mSaveNewPath) {
-                    int x_local = (int)(mCurrentPos.x / mObjectScale);
-                    int y_local = (int)(mCurrentPos.y / mObjectScale);
-//
-                    newPath.add(x_local);
-                    newPath.add(y_local);
-                    System.out.println(x_local + "," + y_local);
-
+                if (mSaveNewPath && mMoving) {
+                    mMoving = false;
+                    newPath.add(mCurrentPos.x);
+                    newPath.add(mCurrentPos.y);
                 }
 
-                if (mCursorMoves) {
-                    for (String object : mObjects.keySet()) {
-                        Object obj = mObjects.get(object);
-                        setStartPosition(obj); // current start position in object
-                        setError(obj);
-                    }
-                }
                 for (String object : mObjects.keySet()) {
-                    if (mObjects.get(object).mError > 150) {
-                        mObjects.get(object).mStartDrawPos = 0;
+                    mObjects.get(object).setStartPosition(mInitPos, mCurrentPos); // current start position in object
+                    mObjects.get(object).setError(mInitPos, mCurrentPos); // error to finger tip
+
+                    if (mSaveNewPath) {
+                        drawNewPath(canvas, mObjects.get(object));
+                    } else {
+                        drawObject(canvas, mObjects.get(object));
                     }
-                    drawObject(canvas, mObjects.get(object));
                 }
-
             }
-
         }
     }
 
-    private void setError(Object obj) {
-        int[] points = obj.mPoints;
-        int i = obj.mStartDrawPos;
-
-        float x_pos = points[i] * mObjectScale + (int) mInitPos.x - points[0] * mObjectScale; // objects points to global space
-        float y_pos = points[i + 1] * mObjectScale + (int) mInitPos.y - points[1] * mObjectScale; // objects points to global space
-
-        float x_err = mCurrentPos.x - x_pos;
-        float y_err = mCurrentPos.y - y_pos;
-        obj.mError = Math.sqrt((x_err * x_err) + (y_err * y_err));
-    }
-
-    // which point (index) in the object lies nearest to the cursor
-    private void setStartPosition(Object object) {
-        int[] points = object.mPoints;
-        int threshold = 500;
-        double min_distance = 10000;
-        float distance_sum = 0;
-        int index = 0;
-
-        int prefix_end_pos = getObjectPosOfPrefix(object);
-        for (int i = object.mStartDrawPos; i < prefix_end_pos; i += 2) {
-            float object_x = points[i] * mObjectScale + (int) mInitPos.x - points[0] * mObjectScale; // objects points to global space
-            float object_y = points[i + 1] * mObjectScale + (int) mInitPos.y - points[1] * mObjectScale; // objects points to global space
-
-            float offset_x = Math.abs(object_x - (int) mCurrentPos.x);
-            float offset_y = Math.abs(object_y - (int) mCurrentPos.y);
-
-            double dist = Math.sqrt(offset_x * offset_x + offset_y * offset_y);
-            distance_sum += dist;
-
-            if (dist < min_distance) {
-                min_distance = dist;
-                index = i;
-            }
-
-        }
-
-        object.mStartDrawPos = index;
-        // triangle is not shown when following the first part of check
-        int maxThickness = 20;
-        int thickness = (int)  (threshold / (distance_sum / ((prefix_end_pos) - object.mStartDrawPos + 1) ));
-        if (thickness > 1000 || thickness < 4) {
-            thickness = 0;
-            object.mStartDrawPos = 0;
-        } else if (thickness > maxThickness) {
-            thickness = maxThickness;
-        }
-
-        object.setThickness(thickness);
-//        System.out.println("Thickness2: " + thickness);
-    }
 
     // mDrawObject options here
+    private void drawNewPath(Canvas canvas, Object object) {
+        mFeedforwardPath = new Path();
+
+        mFeedforwardPath.moveTo((int) mInitPos.x, (int) mInitPos.y);
+        mNewPath.lineTo((int) mCurrentPos.x, (int) mCurrentPos.y);
+
+        int[] points = object.getPoints();
+        for (int x = 0; x < points.length; x += 2) {
+            float x_pos = points[x] * mObjectScale + (int) mInitPos.x - points[0] * mObjectScale; // objects points to global space
+            float y_pos = points[x + 1] * mObjectScale + (int) mInitPos.y - points[1] * mObjectScale; // objects points to global space
+            mFeedforwardPath.lineTo(x_pos, y_pos);
+
+            if (x == (points.length - 2) && !(object.getName().equals(mNewObjectName))) {
+                mNewPaint.setStrokeWidth(4);
+                canvas.drawText(object.getName(), x_pos, y_pos,  mNewPaint);
+                mNewPaint.setStrokeWidth(10);
+            }
+        }
+
+        canvas.drawPath(mFeebackPath, mNewPaint);
+        if ((object.getName().equals(mNewObjectName))) {
+            mNewPaint.setColor(object.getPathPaint().getColor());
+            canvas.drawPath(mNewPath, mNewPaint);
+            mNewPaint.setColor(Color.parseColor("#7A7A7A"));
+        } else {
+            canvas.drawPath(mFeedforwardPath, mNewPaint);
+        }
+    }
+
+    // draw object
     private void drawObject(Canvas canvas, Object object) {
-
-
         mFeedforwardPath = new Path();
         mPrefixPath = new Path();
         mFeebackPath = new Path();
 
-        int[] points = object.mPoints;
-
-        // could store transformed_triangle
         mFeebackPath.moveTo((int) mInitPos.x, (int) mInitPos.y);
 
+        int prefix_end_index = object.getNearestPointToCursor(mInitPos, mCurrentPos);
 
-        int index = getObjectPosOfPrefix(object);
+        int[] points = object.getPoints();
         for (int x = 0; x < points.length; x += 2) {
             float x_pos = points[x] * mObjectScale + (int) mInitPos.x - points[0] * mObjectScale; // objects points to global space
             float y_pos = points[x + 1] * mObjectScale + (int) mInitPos.y - points[1] * mObjectScale; // objects points to global space
-            if (x < object.mStartDrawPos) {
-                mFeebackPath.lineTo(x_pos, y_pos);
-                mFeedbackPaint.setStrokeWidth(object.mThickness);
 
-            } else if (x == object.mStartDrawPos) {
-//                float x_err = mCurrentPos.x - x_pos;
-//                float y_err = mCurrentPos.y - y_pos;
-//                object.mError = Math.sqrt((x_err * x_err) + (y_err * y_err));
+            if (x < object.getStartPos()) {
+                mFeebackPath.lineTo(x_pos, y_pos);
+
+            } else if (x == object.getStartPos()) {
                 mFeebackPath.lineTo(x_pos, y_pos);
                 mPrefixPath.moveTo(x_pos, y_pos);
-                mFeedforwardPath.moveTo(x_pos, y_pos);
-                if (object.mStartDrawPos >= points.length - 10) {
-                    object.mExcecute = true;
+                if (x >= points.length - 10) { // finger tip is near to the end of path
+                    object.setExcecute(true);
                     mSelectedObject = object;
-                    //mSelectedText = ;
                 } else {
-                    object.mExcecute = false;
+                    object.setExcecute(false);
                 }
 
-            } else if (x <= index) {
+            } else if (x < prefix_end_index) {
                 mPrefixPath.lineTo(x_pos, y_pos);
-                if (x == index) {
-                    canvas.drawText(object.mName, x_pos, y_pos, mLabelPaint);
-                    mFeedforwardPath.moveTo(x_pos, y_pos);
-                }
+
+            } else if (x == prefix_end_index) {
+                mPrefixPath.lineTo(x_pos, y_pos);
+                mFeedforwardPath.moveTo(x_pos, y_pos);
+                canvas.drawText(object.getName(), x_pos, y_pos,  object.getTextPaint());
 
             } else {
                 mFeedforwardPath.lineTo(x_pos, y_pos);
             }
+//            if (x == (points.length - 2)) {
+//                canvas.drawText(object.mName, x_pos, y_pos,  object.mTextPaint);
+//            }
         }
-        // noch nicht richtig!!!
+
+        mFeedbackPaint.setStrokeWidth(object.getThickness());
         canvas.drawPath(mFeebackPath, mFeedbackPaint);
-//        canvas.drawPath(mFalsePath, mFalsePaint);
-        if (object.mThickness != 0) {
-            canvas.drawPath(mPrefixPath, object.mPrefixPaint);
-            canvas.drawPath(mFeedforwardPath, object.mPathPaint);
+
+        if (object.getThickness() != 0) {
+            canvas.drawPath(mFeedforwardPath, object.getPathPaint());
+            canvas.drawPath(mPrefixPath, object.getPrefixPaint());
         }
     }
 
-    // which point (index) in the object lies nearest to the cursor
-    private int getObjectPosOfPrefix(Object object) {
-        int[] points = object.mPoints;
-        float x_pos = points[object.mStartDrawPos] * mObjectScale + (int) mInitPos.x - points[0] * mObjectScale; // objects points to global space
-        float y_pos = points[object.mStartDrawPos + 1] * mObjectScale + (int) mInitPos.y - points[1] * mObjectScale; // objects points to global space
-        float x_diff = mCurrentPos.x - x_pos;
-        float y_diff = mCurrentPos.y - y_pos;
-        double sum_distances = Math.sqrt((x_diff * x_diff) + (y_diff * y_diff));
-
-        int index = 0;
-        for (int x = object.mStartDrawPos + 2; x < points.length; x += 2) {
-            x_pos = points[x] * mObjectScale + (int) mInitPos.x - points[0] * mObjectScale; // objects points to global space
-            y_pos = points[x + 1] * mObjectScale + (int) mInitPos.y - points[1] * mObjectScale; // objects points to global space
-            x_diff = mCurrentPos.x - x_pos;
-            y_diff = mCurrentPos.y - y_pos;
-            double distance = Math.sqrt((x_diff * x_diff) + (y_diff * y_diff));
-            sum_distances += distance;
-            if (sum_distances < mPrefixLength) {
-                index = x;
-            }
-        }
-        return index;
-    }
 
     private void clear() {
-        mDollar.clear();
-        mCursorMoves = false;
+        if (mSaveNewPath) {
+            setNewPath();
+            mSaveNewPath = false;
+        }
+
+        for (String objectName : mObjects.keySet()) {
+            Object object = mObjects.get(objectName);
+            if (object.getExcecute()) { // excecute function of command
+                ((MainActivity) this.getContext()).excecuteCommand(object.getName());
+                if (object.getName().length() < 10) {
+                    mSaveNewPath = false;
+                } else {
+                    String substring = object.getName().substring(0, 10);
+                    if (substring.equals("New Path: ")) {
+                        mSaveNewPath = true;
+                        mNewObjectName = object.getName().substring(10, object.getName().length());
+                    } else {
+                        mSaveNewPath = false;
+                    }
+                }
+                mSelectedObject = object;
+                invalidate();
+            }
+        }
+
+        mTouchUp = true;
         newPath = new ArrayList<>();
+
         for (String object : mObjects.keySet()) {
-            Object obj = mObjects.get(object);
-            obj.mStartDrawPos = 0;
-            obj.mExcecute = false;
-            obj.mError = 0.0;
-            obj.setThickness(10);
+            mObjects.get(object).clear();
         }
     }
+
+    private void setNewPath() {
+        Object object = mObjects.get(mNewObjectName);
+        int[] points = new int[newPath.size()];
+        for (int i = 0; i < newPath.size(); i++) {
+            points[i] = (int) (newPath.get(i) / mObjectScale);
+        }
+        object.setPoints(points);
+    }
+
+
 
 }
