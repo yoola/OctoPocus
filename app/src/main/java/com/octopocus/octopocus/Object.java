@@ -39,7 +39,7 @@ public class Object {
 	private int[] mPoints;
 	private int mStartPos = 0;
 	private int mThickness = 10;
-	private boolean mExcecute = false;
+	private boolean mExecute = false;
 
 
 	private Paint mTextPaint = new Paint();
@@ -180,16 +180,16 @@ public class Object {
 
 	public void clear() {
 		mStartPos = 0;
-		mExcecute = false;
+		mExecute = false;
 		setThickness(10);
 	}
 
 	public boolean getExcecute() {
-		return mExcecute;
+		return mExecute;
 	}
 
-	public void setExcecute(boolean excecute) {
-		this.mExcecute = excecute;
+	public void setExecute(boolean execute) {
+		this.mExecute = execute;
 	}
 
 	public float getThickness() {
@@ -199,7 +199,6 @@ public class Object {
 	public Paint getPathPaint() {
 		return mPathPaint;
 	}
-
 
 	public Paint getPrefixPaint() {
 		return mPrefixPaint;

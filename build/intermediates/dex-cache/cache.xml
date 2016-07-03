@@ -1,3 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<items version="2" />
+<items version="2" >
 
+    <item
+        jar="/Users/jula/Github/OctoPocus/app/build/intermediates/exploded-aar/com.android.support/recyclerview-v7/23.3.0/jars/classes.jar"
+        jumboMode="true"
+        revision="23.0.2"
+        sha1="debf30ce0a7560396b6235edef77e447006454c2">
+        <dex dex="/Users/jula/Github/OctoPocus/app/build/intermediates/pre-dexed/debug/com.android.support-recyclerview-v7-23.3.0_fdbb15a296296d33b75f3362a63efa0fbf0da7be.jar" />
+    </item>
+    <item
+        jar="/Users/jula/Library/Android/sdk/extras/android/m2repository/com/android/support/support-annotations/23.3.0/support-annotations-23.3.0.jar"
+        jumboMode="true"
+        revision="23.0.2"
+        sha1="db7791d75a07fef9844d06236c1c59ba7bf6997c">
+        <dex dex="/Users/jula/Github/OctoPocus/app/build/intermediates/pre-dexed/debug/support-annotations-23.3.0_5599079b575995872ebb065089c86462bcac7bce.jar" />
+    </item>
+    <item
+        jar="/Users/jula/Github/OctoPocus/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.3.0/jars/classes.jar"
+        jumboMode="true"
+        revision="23.0.2"
+        sha1="1b8e03daaa43fb0a4cd57e378167c2fd70454c1e">
+        <dex dex="/Users/jula/Github/OctoPocus/app/build/intermediates/pre-dexed/debug/com.android.support-appcompat-v7-23.3.0_4f27ae512757306a08bad93a755a746cb58aba18.jar" />
+    </item>
+    <item
+        jar="/Users/jula/Github/OctoPocus/app/build/intermediates/exploded-aar/com.android.support/animated-vector-drawable/23.3.0/jars/classes.jar"
+        jumboMode="true"
+        revision="23.0.2"
+        sha1="23be6993826b8fd88bbc8d14928bb3b8960d3d4e">
+        <dex dex="/Users/jula/Github/OctoPocus/app/build/intermediates/pre-dexed/debug/com.android.support-animated-vector-drawable-23.3.0_65f80ea7192db41b32a30be1a4ec2d917ab66876.jar" />
+    </item>
+    <item
+        jar="/Users/jula/Github/OctoPocus/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.3.0/jars/classes.jar"
+        jumboMode="true"
+        revision="23.0.2"
+        sha1="8a034dd16c0dfd75fe86c52c2cd581592acc684a">
+        <dex dex="/Users/jula/Github/OctoPocus/app/build/intermediates/pre-dexed/debug/com.android.support-support-v4-23.3.0_a0929cf613114e08de9d64aad3a6a224baff2c4e.jar" />
+    </item>
+    <item
+        jar="/Users/jula/Github/OctoPocus/app/build/intermediates/incremental-runtime-classes/debug/instant-run.jar"
+        jumboMode="true"
+        revision="23.0.2"
+        sha1="4f20e5da81c0affc982053b5686942342c365fc4">
+        <dex dex="/Users/jula/Github/OctoPocus/app/build/intermediates/pre-dexed/debug/instant-run_c2d306cf637f3b7a6844b60227a740fa5f2b8745.jar" />
+    </item>
+    <item
+        jar="/Users/jula/Github/OctoPocus/app/build/intermediates/incremental-classes/debug/instant-run-bootstrap.jar"
+        jumboMode="true"
+        revision="23.0.2"
+        sha1="5b1b625e53955f799a4d0c33fbd24113dd78ed93">
+        <dex dex="/Users/jula/Github/OctoPocus/app/build/intermediates/pre-dexed/debug/instant-run-bootstrap_d466d226f5ba7752444cc6b9ded1bb52230508fb.jar" />
+    </item>
+    <item
+        jar="/Users/jula/Github/OctoPocus/app/build/intermediates/exploded-aar/com.android.support/support-vector-drawable/23.3.0/jars/classes.jar"
+        jumboMode="true"
+        revision="23.0.2"
+        sha1="a0b5d60246cd9d4f3f2443611b3b4c25265840b5">
+        <dex dex="/Users/jula/Github/OctoPocus/app/build/intermediates/pre-dexed/debug/com.android.support-support-vector-drawable-23.3.0_ffef555fa213e2f1778e1e3bf1695d038af2e746.jar" />
+    </item>
+    <item
+        jar="/Users/jula/Github/OctoPocus/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.3.0/jars/libs/internal_impl-23.3.0.jar"
+        jumboMode="true"
+        revision="23.0.2"
+        sha1="4da5a4d697d32497c6f85567a5112e62fdfd0676">
+        <dex dex="/Users/jula/Github/OctoPocus/app/build/intermediates/pre-dexed/debug/internal_impl-23.3.0_121604dd1ce4c31bd15f1b3405ee63374a5d51cc.jar" />
+    </item>
+    <item
+        jar="/Users/jula/Github/OctoPocus/app/build/intermediates/exploded-aar/com.android.support/design/23.3.0/jars/classes.jar"
+        jumboMode="true"
+        revision="23.0.2"
+        sha1="f0001e71cea6ae432a00021c6f727f5ef0f3d27e">
+        <dex dex="/Users/jula/Github/OctoPocus/app/build/intermediates/pre-dexed/debug/com.android.support-design-23.3.0_47912c83df26ee8f062b20ed9e843a327c8b22fe.jar" />
+    </item>
+
+</items>

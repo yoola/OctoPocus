@@ -16,13 +16,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+// to do: - adapt the gesture size to display size
+//        - only view the branches for copy/paste/select/cut of new path if new path was chosen
+//        - hide path menu for experts
+//        - an redo/undo function?
 
 public class MyView extends View {
 
     private Paint mFeedbackPaint;
     private Paint mNewPaint;
 
-    private Path mFeebackPath = new Path();
+    private Path mFeedbackPath = new Path();
     private Path mFeedforwardPath = new Path();
     private Path mPrefixPath = new Path();
     private Path mNewPath = new Path();
@@ -122,6 +126,7 @@ public class MyView extends View {
 
         // if path was selected display name
         if (mSelectedObject != null && mTouchUp) {
+            // positioning the name of the selected path in the center of the display
             int offset = (mSelectedObject.getName().length() / 2);
             int width = (this.getWidth() / 2) - (offset * 20);
             int height = (this.getHeight() / 2) - offset;
@@ -133,7 +138,7 @@ public class MyView extends View {
 
                 if (mSaveNewPath && mMoving) {
                     mMoving = false;
-                    newPath.add(mCurrentPos.x);
+                    newPath.add(mCurrentPos.x); // getting the points for the new path
                     newPath.add(mCurrentPos.y);
                 }
 
@@ -146,6 +151,8 @@ public class MyView extends View {
                     } else {
                         drawObject(canvas, mObjects.get(object));
                     }
+
+
                 }
             }
         }
@@ -161,6 +168,7 @@ public class MyView extends View {
 
         int[] points = object.getPoints();
         for (int x = 0; x < points.length; x += 2) {
+
             float x_pos = points[x] * mObjectScale + (int) mInitPos.x - points[0] * mObjectScale; // objects points to global space
             float y_pos = points[x + 1] * mObjectScale + (int) mInitPos.y - points[1] * mObjectScale; // objects points to global space
             mFeedforwardPath.lineTo(x_pos, y_pos);
@@ -172,7 +180,7 @@ public class MyView extends View {
             }
         }
 
-        canvas.drawPath(mFeebackPath, mNewPaint);
+        canvas.drawPath(mFeedbackPath, mNewPaint);
         if ((object.getName().equals(mNewObjectName))) {
             mNewPaint.setColor(object.getPathPaint().getColor());
             canvas.drawPath(mNewPath, mNewPaint);
@@ -186,9 +194,9 @@ public class MyView extends View {
     private void drawObject(Canvas canvas, Object object) {
         mFeedforwardPath = new Path();
         mPrefixPath = new Path();
-        mFeebackPath = new Path();
+        mFeedbackPath = new Path();
 
-        mFeebackPath.moveTo((int) mInitPos.x, (int) mInitPos.y);
+        mFeedbackPath.moveTo((int) mInitPos.x, (int) mInitPos.y);
 
         int prefix_end_index = object.getNearestPointToCursor(mInitPos, mCurrentPos);
 
@@ -198,16 +206,16 @@ public class MyView extends View {
             float y_pos = points[x + 1] * mObjectScale + (int) mInitPos.y - points[1] * mObjectScale; // objects points to global space
 
             if (x < object.getStartPos()) {
-                mFeebackPath.lineTo(x_pos, y_pos);
+                mFeedbackPath.lineTo(x_pos, y_pos);
 
             } else if (x == object.getStartPos()) {
-                mFeebackPath.lineTo(x_pos, y_pos);
+                mFeedbackPath.lineTo(x_pos, y_pos);
                 mPrefixPath.moveTo(x_pos, y_pos);
                 if (x >= points.length - 10) { // finger tip is near to the end of path
-                    object.setExcecute(true);
+                    object.setExecute(true);
                     mSelectedObject = object;
                 } else {
-                    object.setExcecute(false);
+                    object.setExecute(false);
                 }
 
             } else if (x < prefix_end_index) {
@@ -227,7 +235,7 @@ public class MyView extends View {
         }
 
         mFeedbackPaint.setStrokeWidth(object.getThickness());
-        canvas.drawPath(mFeebackPath, mFeedbackPaint);
+        canvas.drawPath(mFeedbackPath, mFeedbackPaint);
 
         if (object.getThickness() != 0) {
             canvas.drawPath(mFeedforwardPath, object.getPathPaint());
@@ -245,7 +253,7 @@ public class MyView extends View {
         for (String objectName : mObjects.keySet()) {
             Object object = mObjects.get(objectName);
             if (object.getExcecute()) { // excecute function of command
-                ((MainActivity) this.getContext()).excecuteCommand(object.getName());
+                ((MainActivity) this.getContext()).executeCommand(object.getName());
                 if (object.getName().length() < 10) {
                     mSaveNewPath = false;
                 } else {
