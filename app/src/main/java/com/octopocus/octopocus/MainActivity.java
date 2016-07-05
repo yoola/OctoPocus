@@ -42,14 +42,11 @@ public class MainActivity extends AppCompatActivity {
 
         if (name.equals("Copy")) {
             if (text != null && text != "") {
-                System.out.println("Copy " + text);
                 clip = ClipData.newPlainText("simple text", text); // saving the text on the clipboard
                 clipboardManager.setPrimaryClip(clip);
             }
             // instructions
         } else if (name.equals("Paste")) {
-            System.out.println("Paste");
-
             ClipData.Item item = clipboardManager.getPrimaryClip().getItemAt(0);
             String pasteData = item.getText().toString();
             if (pasteData != null || pasteData == "") {
@@ -61,8 +58,6 @@ public class MainActivity extends AppCompatActivity {
                     int end = editText.getSelectionEnd();
                     newText = text.substring(0, start);
                     newText += pasteData;
-                    // ---> You can always only select everything anyway with the gesture technique
-                    // ---> So, newText = pasteData would be sufficient
                     newText += text.substring(end, text.length());
                     editText.setText(newText);
                     editText.setSelection(end); // setting the cursor to the end of the text

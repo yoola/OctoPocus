@@ -45,7 +45,14 @@ public class Template
 		this.mName = name;
 
 		this.mPoints = Utils.Resample(points, Recognizer.NumPoints);
-		this.mPoints = Utils.RotateToZero(this.mPoints);
+		//this.mPoints = Utils.RotateToZero(this.mPoints);
+		this.mPoints = Utils.ScaleToSquare(this.mPoints, Recognizer.SquareSize);
+		this.mPoints = Utils.TranslateToOrigin(this.mPoints);
+	}
+
+	public void setPoints(Vector newPoints) {
+		this.mPoints = Utils.Resample(newPoints, Recognizer.NumPoints);
+		//this.mPoints = Utils.RotateToZero(this.mPoints);
 		this.mPoints = Utils.ScaleToSquare(this.mPoints, Recognizer.SquareSize);
 		this.mPoints = Utils.TranslateToOrigin(this.mPoints);
 	}

@@ -77,35 +77,16 @@ public class Recognizer
 	
 	void loadTemplatesDefault()
 	{
-		Templates.addElement(loadTemplate("triangle", TemplateData.copyPoints));
-//		Templates.addElement(loadTemplate("x", TemplateData.xPoints));
-//		Templates.addElement(loadTemplate("rectangle CCW", TemplateData.rectanglePointsCCW));
-//		Templates.addElement(loadTemplate("circle CCW", TemplateData.circlePointsCCW));
-//		Templates.addElement(loadTemplate("check", TemplateData.checkPoints));
-//		Templates.addElement(loadTemplate("caret CW", TemplateData.caretPointsCW));
-//		Templates.addElement(loadTemplate("question", TemplateData.questionPoints));
-//		Templates.addElement(loadTemplate("arrow", TemplateData.arrowPoints));
-//		Templates.addElement(loadTemplate("leftSquareBracket", TemplateData.leftSquareBracketPoints));
-//		Templates.addElement(loadTemplate("rightSquareBracket", TemplateData.rightSquareBracketPoints));
-//		Templates.addElement(loadTemplate("v", TemplateData.vPoints));
-//		Templates.addElement(loadTemplate("delete", TemplateData.deletePoints));
-//		Templates.addElement(loadTemplate("leftCurlyBrace", TemplateData.leftCurlyBracePoints));
-//		Templates.addElement(loadTemplate("rightCurlyBrace", TemplateData.rightCurlyBracePoints));
-//		Templates.addElement(loadTemplate("star", TemplateData.starPoints));
-//		Templates.addElement(loadTemplate("pigTail", TemplateData.pigTailPoints));
+		Templates.addElement(loadTemplate("Copy", TemplateData.copyPoints));
+		Templates.addElement(loadTemplate("Paste", TemplateData.pastePoints));
+		Templates.addElement(loadTemplate("Select", TemplateData.selectPoints));
+		Templates.addElement(loadTemplate("Cut", TemplateData.cutPoints));
 	}
 	
 	void loadTemplatesSimple()
 	{
 //		Templates.addElement(loadTemplate("circle CCW", TemplateData.circlePointsCCW));
 //		Templates.addElement(loadTemplate("circle CW", TemplateData.circlePointsCW));
-////		Templates.addElement(loadTemplate("rectangle CCW", TemplateData.rectanglePointsCCW));
-////		Templates.addElement(loadTemplate("rectangle CW", TemplateData.rectanglePointsCW));
-//		Templates.addElement(loadTemplate("caret CCW", TemplateData.caretPointsCCW));
-//		Templates.addElement(loadTemplate("caret CW", TemplateData.caretPointsCW));
-////		Templates.addElement(loadTemplate("line left", TemplateData.lineToLeftPoints));
-////		Templates.addElement(loadTemplate("line right", TemplateData.lineToRightPoints));
-//		Templates.addElement(loadTemplate("question", TemplateData.questionPoints));
 	}
 	
 	void loadTemplatesCircles()
@@ -141,7 +122,7 @@ public class Recognizer
 	public Result Recognize(Vector points)
 	{
 		points = Utils.Resample(points, NumPoints);		
-		points = Utils.RotateToZero(points, centroid, boundingBox);
+		//points = Utils.RotateToZero(points, centroid, boundingBox);
 		points = Utils.ScaleToSquare(points, SquareSize);
 		points = Utils.TranslateToOrigin(points);
 	
@@ -180,6 +161,26 @@ public class Recognizer
 		}
 		
 		return Templates.size();
+	}
+
+
+	public void setNewPath(String name, int[] newPoints) {
+		int index = -1;
+		if (name.equals("Copy")) {
+			index = 0;
+		} else if (name.equals("Paste")) {
+			index = 1;
+		} else if (name.equals("Select")) {
+			index = 2;
+		} else if (name.equals("Cut")) {
+			index = 3;
+		}
+
+		if (index != -1) {
+			Template temp = (Template) Templates.get(index);
+			temp.setPoints(loadArray(newPoints));
+
+		}
 	}
 
 }

@@ -123,11 +123,15 @@ public class Dollar implements TouchListener
 			return;
 		
 		result = recognizer.Recognize(points);
-        System.out.println("Result" + result.Name);
+//        System.out.println("Result " + result.Name);
 //		points.removeAllElements();
 		
 		if (listener != null)
 			listener.dollarDetected(this);
+	}
+
+	public void setNewPoints(String name, int[] newPoints) {
+		recognizer.setNewPath(name, newPoints);
 	}
 
 	public Rectangle getBoundingBox()

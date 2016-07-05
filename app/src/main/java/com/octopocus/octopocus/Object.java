@@ -82,18 +82,18 @@ public class Object {
 	// Getter and Setter
 
 	// which point (index) in the object lies nearest to the cursor
-	public void setStartPosition(PointF initPos, PointF currentPos) {
+	public void setStartPosition(Point initPos, Point currentPos) {
 		int threshold = 500;
 		float distance_sum = 0;
 		double min_distance = 10000;
 
 		int prefix_end_index = this.getNearestPointToCursor(initPos, currentPos);
 		for (int i = mStartPos; i < prefix_end_index; i += 2) {
-			float object_x = mPoints[i] * mObjectScale + (int) initPos.x - mPoints[0] * mObjectScale; // objects points to global space
-			float object_y = mPoints[i + 1] * mObjectScale + (int) initPos.y - mPoints[1] * mObjectScale; // objects points to global space
+			float object_x = mPoints[i] * mObjectScale + (int) initPos.X - mPoints[0] * mObjectScale; // objects points to global space
+			float object_y = mPoints[i + 1] * mObjectScale + (int) initPos.Y - mPoints[1] * mObjectScale; // objects points to global space
 
-			float offset_x = Math.abs(object_x - (int) currentPos.x);
-			float offset_y = Math.abs(object_y - (int) currentPos.y);
+			float offset_x = Math.abs(object_x - (int) currentPos.X);
+			float offset_y = Math.abs(object_y - (int) currentPos.Y);
 			double dist = Math.sqrt(offset_x * offset_x + offset_y * offset_y);
 
 			distance_sum += dist;
@@ -116,15 +116,15 @@ public class Object {
 
 
 	// which point (index) in the object lies nearest to the cursor
-	public int getNearestPointToCursor(PointF mInitPos, PointF mCurrentPos) {
+	public int getNearestPointToCursor(Point mInitPos, Point mCurrentPos) {
 		double sum_distances = 0;
 		int index = 0;
 
 		for (int x = mStartPos; x < mPoints.length; x += 2) {
-			float x_pos = mPoints[x] * mObjectScale + (int) mInitPos.x - mPoints[0] * mObjectScale; // objects points to global space
-			float y_pos = mPoints[x + 1] * mObjectScale + (int) mInitPos.y - mPoints[1] * mObjectScale; // objects points to global space
-			float x_diff = mCurrentPos.x - x_pos;
-			float y_diff = mCurrentPos.y - y_pos;
+			float x_pos = mPoints[x] * mObjectScale + (int) mInitPos.X - mPoints[0] * mObjectScale; // objects points to global space
+			float y_pos = mPoints[x + 1] * mObjectScale + (int) mInitPos.Y - mPoints[1] * mObjectScale; // objects points to global space
+			double x_diff = mCurrentPos.X - x_pos;
+			double y_diff = mCurrentPos.Y - y_pos;
 			double distance = Math.sqrt((x_diff * x_diff) + (y_diff * y_diff));
 
 			sum_distances += distance;
@@ -136,15 +136,15 @@ public class Object {
 	}
 
 	// error between finger and start position
-	public void setError(PointF initPos, PointF currentPos) {
+	public void setError(Point initPos, Point currentPos) {
 		int[] points = mPoints;
 		int i = mStartPos;
 
-		float x_pos = points[i] * mObjectScale + (int) initPos.x - points[0] * mObjectScale; // objects points to global space
-		float y_pos = points[i + 1] * mObjectScale + (int) initPos.y - points[1] * mObjectScale; // objects points to global space
+		float x_pos = points[i] * mObjectScale + (int) initPos.X - points[0] * mObjectScale; // objects points to global space
+		float y_pos = points[i + 1] * mObjectScale + (int) initPos.Y - points[1] * mObjectScale; // objects points to global space
 
-		float x_err = currentPos.x - x_pos;
-		float y_err = currentPos.y - y_pos;
+		double x_err = currentPos.X - x_pos;
+		double y_err = currentPos.Y - y_pos;
 
 		double error = Math.sqrt((x_err * x_err) + (y_err * y_err));
 
