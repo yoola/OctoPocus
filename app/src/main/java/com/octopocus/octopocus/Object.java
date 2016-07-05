@@ -39,7 +39,8 @@ public class Object {
 	private int[] mPoints;
 	private int mStartPos = 0;
 	private int mThickness = 10;
-	private boolean mExcecute = false;
+	private int mMaxThickness = 20;
+	private boolean mExecute = false;
 
 
 	private Paint mTextPaint = new Paint();
@@ -47,15 +48,18 @@ public class Object {
 	private Paint mPrefixPaint = new Paint();
 
 	private int mPrefixLength = 1200;
-	private float mObjectScale = 3;
+	private float mObjectScale;
 	private float mErrorThreshold = 150; // max distance to finger tip for following
 
 
 
-	Object(String name, int[] points, String pathColor, String prefixColor) {
+	Object(String name, int[] points, String pathColor, String prefixColor, float objectScale, int maxThickness) {
 		this.mName = name;
 
 		this.mPoints = points;
+
+		this.mObjectScale = objectScale;
+		this.mMaxThickness = maxThickness;
 
 		this.mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		this.mTextPaint.setStyle(Paint.Style.STROKE);
@@ -80,7 +84,6 @@ public class Object {
 	// which point (index) in the object lies nearest to the cursor
 	public void setStartPosition(PointF initPos, PointF currentPos) {
 		int threshold = 500;
-		int maxThickness = 20;
 		float distance_sum = 0;
 		double min_distance = 10000;
 
@@ -105,8 +108,8 @@ public class Object {
 		if (thickness > 1000 || thickness < 4) {
 			thickness = 0;
 			mStartPos = 0;
-		} else if (thickness > maxThickness) {
-			thickness = maxThickness;
+		} else if (thickness > mMaxThickness) {
+			thickness = mMaxThickness;
 		}
 		setThickness(thickness);
 	}
@@ -180,16 +183,16 @@ public class Object {
 
 	public void clear() {
 		mStartPos = 0;
-		mExcecute = false;
+		mExecute = false;
 		setThickness(10);
 	}
 
 	public boolean getExcecute() {
-		return mExcecute;
+		return mExecute;
 	}
 
-	public void setExcecute(boolean excecute) {
-		this.mExcecute = excecute;
+	public void setExecute(boolean execute) {
+		this.mExecute = execute;
 	}
 
 	public float getThickness() {
@@ -199,7 +202,6 @@ public class Object {
 	public Paint getPathPaint() {
 		return mPathPaint;
 	}
-
 
 	public Paint getPrefixPaint() {
 		return mPrefixPaint;
