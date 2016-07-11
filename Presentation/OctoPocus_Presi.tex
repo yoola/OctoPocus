@@ -99,27 +99,23 @@ Bauhaus Universität Weimar  % Your institution for the title page
 \begin{frame}
 \frametitle{Original Paper: Core Ideas}
 
+\begin{figure}
+\centering
+\includegraphics[width=0.54\textwidth]{ffpaths12.png}
+	\caption{Left: Feedforward, Right: Feedforward and Feedback}
+\end{figure}
 \begin{itemize}
-\item User can execute gestures dynamically in different directions starting at the same point
+\item User can execute gestures dynamically in different directions
 \pause
 \item Each gesture evokes a different command, e.g. Paste, Copy, etc.
 \pause
-\item Learns to remember them after a few executions $\rightarrow$ \grqq Learning by doing\grqq
+\item Learns to remember them after a few executions
 \pause
 \item Combination of an on-touch feedforward and feedback system
 \pause
 \item Less likely gesture paths become thinner or disappear entirely
 \pause
 \end{itemize}
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.5\textwidth]{ffpaths12.png}
-	\caption{Left: Feedforward mechanism, Right: Feedforward and Feedback mechanism}
-\end{figure}
-
-
-
 
 
 \end{frame}
@@ -139,14 +135,8 @@ Bauhaus Universität Weimar  % Your institution for the title page
 \item Each template gesture has a prefix starting at the cursor and marking a small part of the whole gesture in a deep color, the rest has the same but translucent color
 \pause
 \item The associated command is shown at the end of the prefix
-\pause
-\item Disadvantage: Can take up a lot of screen space
 \end{itemize}
-
-
 \end{frame}
-
-
 
 %------------------------------------------------
 
@@ -173,9 +163,6 @@ Bauhaus Universität Weimar  % Your institution for the title page
 %	\end{itemize}
 
 \end{itemize}
-
-
-
 \end{frame}
 
 %------------------------------------------------
@@ -193,7 +180,6 @@ Expert version:
 \begin{itemize}
 \item No paths are displayed
 \end{itemize}
-
 \end{frame}
 
 
@@ -223,11 +209,7 @@ Expert version:
 	\pause
 	\end{itemize}
 \item Novice and Expert mode
-
-
-
 \end{itemize}
-
 \end{frame}
 
 %------------------------------------------------
@@ -242,7 +224,6 @@ Expert version:
 \pause
 \item One path is provided for the user to create his own gesture paths, replacing it with the old ones 
 \end{itemize}
-
 \end{frame}
 
 %------------------------------------------------
@@ -271,17 +252,29 @@ Expert version:
 	\end{itemize}
 
 \end{itemize}
-
 \end{frame}
-
-
 
 %------------------------------------------------
 
 \begin{frame}
-\Huge{\centerline{The End}}
+\frametitle{Live Demo}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.35\textwidth]{myOctoPocus.png}
+\end{figure}
 \end{frame}
 
 %----------------------------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{References}
+\footnotesize{
+\begin{thebibliography}{99} % Beamer does not support BibTeX so references must be inserted manually as %below
+\bibitem[Smith, 2012]{p1} Olivier Bau \& Wendy E. Mackay (2008)
+\newblock Title of the publication
+\newblock \emph{OctoPocus: A Dynamic Guide for Learning Gesture-Based Command Sets} 
+\end{thebibliography}
+}
+\end{frame}
 
 \end{document}
