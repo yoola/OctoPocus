@@ -101,12 +101,16 @@ Bauhaus Universität Weimar  % Your institution for the title page
 
 \begin{itemize}
 \item User can execute gestures dynamically in different directions starting at the same point
-\item Learns to remember them after a few executions $\rightarrow$ \grqq Learning by doing\grqq
+\pause
 \item Each gesture evokes a different command, e.g. Paste, Copy, etc.
+\pause
+\item Learns to remember them after a few executions $\rightarrow$ \grqq Learning by doing\grqq
+\pause
 \item Combination of an on-touch feedforward and feedback system
+\pause
 \item Less likely gesture paths become thinner or disappear entirely
+\pause
 \end{itemize}
-
 
 \begin{figure}[H]
 \centering
@@ -115,24 +119,30 @@ Bauhaus Universität Weimar  % Your institution for the title page
 \end{figure}
 
 
+
+
+
 \end{frame}
 %------------------------------------------------
 
 \begin{frame}
 \frametitle{Feedforward mechanism}
 
-\begin{itemize}
-\item Gives the user an impression of the gesture's shape and the related command
-\item Each template gesture has a prefix starting at the cursor and marking a small part of the whole gesture in a deep color, the rest has the same but translucent color
-\item The associated command is shown at the end of the prefix
-
-\item Disadvantage: Can take up a lot of screen space
-\end{itemize}
-
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.65\textwidth]{ff.png}
 \end{figure}
+
+\begin{itemize}
+\item Gives the user an impression of the gesture's shape and the related command
+\pause
+\item Each template gesture has a prefix starting at the cursor and marking a small part of the whole gesture in a deep color, the rest has the same but translucent color
+\pause
+\item The associated command is shown at the end of the prefix
+\pause
+\item Disadvantage: Can take up a lot of screen space
+\end{itemize}
+
 
 \end{frame}
 
@@ -143,10 +153,18 @@ Bauhaus Universität Weimar  % Your institution for the title page
 \begin{frame}
 \frametitle{Feedback mechanism}
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.65\textwidth]{fb.png}
+\end{figure}
+
 \begin{itemize}
 \item Provides information about the recognition process after some action of the user 
+\pause
 \item Gesture recognition is accomplished by a classification algorithm using distance measures (Rubine's algorithm and Mahalanobis distance) 
+\pause
 \item The distances sum up to a consumable error rate until the input can no longer be recognized as a member of a given gesture class
+\pause
 \item The consumable error rate is also mapped onto the thickness of the gesture
 %	\begin{itemize}
 %	\item Initially all paths have the same thickness
@@ -156,10 +174,6 @@ Bauhaus Universität Weimar  % Your institution for the title page
 
 \end{itemize}
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.65\textwidth]{fb.png}
-\end{figure}
 
 
 \end{frame}
@@ -173,6 +187,7 @@ Novice version:
 \begin{itemize}
 \item All paths are displayed by doing a long click \newline
 \end{itemize}
+\pause
 
 Expert version: 
 \begin{itemize}
@@ -190,14 +205,24 @@ Expert version:
 
 \begin{itemize}
 \item Gestures with different commands
+\pause
+\item OctoPocus resets itself if the user is returning back to the starting point
+\pause
 \item Feedforward: Prefix displays the next part to be drawn
+\pause
 \item Feedback: 
 	\begin{itemize}
+	\pause
 	\item Already drawn path is shown in black 
+	\pause
 	\item Distance measure (Euclidean distance) as recognition tool, also mapped onto the path's 				  thickness
+	\pause
 	\item Likely paths have a fixed thickness
+	\pause
 	\item The less likely a path, the thinner it gets until it disappears
+	\pause
 	\end{itemize}
+\item Novice and Expert mode
 
 
 
@@ -211,13 +236,11 @@ Expert version:
 \frametitle{Own Implementation: Differences to the original implementation}
 
 \begin{itemize}
+\item The starting point of the gesture is set at the touchdown of the finger (not variable after that)
+\pause
 \item We are working with touch and not with a cursor \newline $\Rightarrow$ Occlusion problems when paths are spread into all directions
+\pause
 \item One path is provided for the user to create his own gesture paths, replacing it with the old ones 
-\item No Novice or Expert mode yet
-
-
-
-
 \end{itemize}
 
 \end{frame}
@@ -231,16 +254,19 @@ Expert version:
 \item 1\$ recognizer:
 	\begin{itemize}
 	\item Was first considered for path recognition
-	\item Turned out to be complicated to work out with our purpose, since the figure could be drawn in every direction (even backwards) and was still recognized \newline
+	\item Complicated to work with for precise recognition
+	\item Useful for Expert mode (?)\newline
 	\end{itemize}
+\pause
 \item Finding the right thresholds:
 	\begin{itemize}
 	\item Paths can be drawn quite close to each other
-	\item Solution: Doing error calculation only in the area close to the cursor \newline
+	\item Solution: Doing error calculation only in the area close to the finger \newline
 	\end{itemize}
+\pause
 \item Occlusion:
 	\begin{itemize}
-	\item All paths are set by default into different directions
+	\item All paths point into different directions by default
 	\item Solution: Default paths can be modified by the \grqq New Path \grqq function, e.g. if the user is right-handed, he can draw all paths from the lower right to the left, upperleft and top direction
 	\end{itemize}
 
