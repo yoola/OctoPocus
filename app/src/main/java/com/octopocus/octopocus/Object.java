@@ -89,8 +89,8 @@ public class Object {
 
 		int prefix_end_index = this.getNearestPointToCursor(initPos, currentPos);
 		for (int i = mStartPos; i < prefix_end_index; i += 2) {
-			float object_x = mPoints[i] * mObjectScale + (int) initPos.X - mPoints[0] * mObjectScale; // objects points to global space
-			float object_y = mPoints[i + 1] * mObjectScale + (int) initPos.Y - mPoints[1] * mObjectScale; // objects points to global space
+			float object_x = mPoints[i] * mObjectScale + (int) initPos.X - mPoints[0] * mObjectScale; // objects points to local space
+			float object_y = mPoints[i + 1] * mObjectScale + (int) initPos.Y - mPoints[1] * mObjectScale; // objects points to local space
 
 			float offset_x = Math.abs(object_x - (int) currentPos.X);
 			float offset_y = Math.abs(object_y - (int) currentPos.Y);
@@ -121,8 +121,8 @@ public class Object {
 		int index = 0;
 
 		for (int x = mStartPos; x < mPoints.length; x += 2) {
-			float x_pos = mPoints[x] * mObjectScale + (int) mInitPos.X - mPoints[0] * mObjectScale; // objects points to global space
-			float y_pos = mPoints[x + 1] * mObjectScale + (int) mInitPos.Y - mPoints[1] * mObjectScale; // objects points to global space
+			float x_pos = mPoints[x] * mObjectScale + (int) mInitPos.X - mPoints[0] * mObjectScale; // objects points to local space
+			float y_pos = mPoints[x + 1] * mObjectScale + (int) mInitPos.Y - mPoints[1] * mObjectScale; // objects points to local space
 			double x_diff = mCurrentPos.X - x_pos;
 			double y_diff = mCurrentPos.Y - y_pos;
 			double distance = Math.sqrt((x_diff * x_diff) + (y_diff * y_diff));

@@ -39,6 +39,7 @@ public class MyView extends View {
 
     private float mObjectScale = 3; // Scale of objects
     private int mMaxThickness = 10;
+    private double mTime = 0;
 
     private boolean mOnClick = false;
     private boolean mDisplayNewPathText = false;
@@ -48,6 +49,7 @@ public class MyView extends View {
     private boolean mTouchUp = false;
     private boolean mMoving = false;
     private boolean mSaveNewPath = false;
+    private boolean mTryAgain = false;
     private Object mSelectedObject = null;
 
     private List<Double> newPath = new ArrayList<>();
@@ -109,6 +111,7 @@ public class MyView extends View {
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
+                mTime = System.currentTimeMillis();
                 //mSelectedObject.mPathPaint.setStrokeWidth(10);
                 mOnClick = true;
                 if (mFirstTouch) {
@@ -163,69 +166,88 @@ public class MyView extends View {
         super.onDraw(canvas);
 
         // decide if Novice or Expert Mode
+        double time = System.currentTimeMillis();
+        double t = time - mTime;
         if (mUnclearMode && mOnClick && mCurrentPos != null) {
             double p_x = mInitPos.X - mCurrentPos.X;
             double p_y = mInitPos.Y - mCurrentPos.Y;
             double distance = Math.sqrt(p_x * p_x + p_y * p_y);
-            if (distance < 3){ // user was fast enough above threshold
-                mNoviceMode = true;
-                mUnclearMode = false;
-            } else {
-                mNoviceMode = false;
-                mUnclearMode = false;
-            }
-        }
-
-        if (mDisplayNewPathText && mTouchUp) {
-            String text = "Hold to draw Path for " + mNewObjectName;
-            int offset = (text.length() / 2);
-            int width = (this.getWidth() / 2) - (offset * 20);
-            int height = (this.getHeight() / 2) - offset;
-            mNewPaint.setStrokeWidth(5);
-            canvas.drawText(text, width, height, mNewPaint);
-            mNewPaint.setTextSize(40);
-        }
-
-        // if path was selected display name
-        if (mSelectedObject != null && mTouchUp) {
-            // positioning the name of the selected path in the center of the display
-            int offset = (mSelectedObject.getName().length() / 2);
-            int width = (this.getWidth() / 2) - (offset * 20);
-            int height = (this.getHeight() / 2) - offset;
-            canvas.drawText(mSelectedObject.getName(), width, height, mSelectedObject.getTextPaint());
-
-        } else {
-
-            if (mCurrentPos != null) {
-
-                // save new Path
-                if (mSaveNewPath && mMoving) {
-                    mMoving = false;
-                    newPath.add(mCurrentPos.X); // getting the points for the new path
-                    newPath.add(mCurrentPos.Y);
+            if (t > 300) {
+                if (distance < 3){ // user was fast enough above threshold
+                    mNoviceMode = true;
+                    mUnclearMode = false;
+                    invalidate();
+                } else {
+                    mNoviceMode = false;
+                    mUnclearMode = false;
+                    invalidate();
                 }
+            } else {
+                if (distance > 6) {
+                    mNoviceMode = false;
+                    mUnclearMode = false;
+                    //invalidate();
+                }
+                invalidate();
+            }
+        } else {
+            if ((mDisplayNewPathText && mTouchUp) || (mTryAgain && mTouchUp)) {
+                String text = "";
+                if (mTryAgain) {
+                    text = "Path to short. Try again: " + mNewObjectName;
+                } else {
+                    text = "Hold to draw Path for " + mNewObjectName;
+                }
+                int offset = (text.length() / 2);
+                int width = (this.getWidth() / 2) - (offset * 20);
+                int height = (this.getHeight() / 2) - offset;
+                mNewPaint.setStrokeWidth(5);
+                canvas.drawText(text, width, height, mNewPaint);
+                mNewPaint.setTextSize(40);
+            }
 
-                if (mNoviceMode) { // Novice Mode
-                    for (String object : mObjects.keySet()) {
-                        mObjects.get(object).setStartPosition(mInitPos, mCurrentPos); // current start position in object
-                        mObjects.get(object).setError(mInitPos, mCurrentPos); // error to finger tip
+            // if path was selected display name
+            if (mSelectedObject != null && mTouchUp) {
+                // positioning the name of the selected path in the center of the display
+                int offset = (mSelectedObject.getName().length() / 2);
+                int width = (this.getWidth() / 2) - (offset * 20);
+                int height = (this.getHeight() / 2) - offset;
+                canvas.drawText(mSelectedObject.getName(), width, height, mSelectedObject.getTextPaint());
 
+            } else {
+
+                if (mCurrentPos != null) {
+
+                    // save new Path
+                    if (mSaveNewPath && mMoving) {
+                        mMoving = false;
+                        newPath.add(mCurrentPos.X); // getting the points for the new path
+                        newPath.add(mCurrentPos.Y);
+                    }
+
+                    if (mNoviceMode) { // Novice Mode
+                        for (String object : mObjects.keySet()) {
+                            mObjects.get(object).setStartPosition(mInitPos, mCurrentPos); // current start position in object
+                            mObjects.get(object).setError(mInitPos, mCurrentPos); // error to finger tip
+
+                            if (mSaveNewPath) {
+                                drawNewPath(canvas, mObjects.get(object));
+                            } else {
+                                drawObject(canvas, mObjects.get(object));
+                            }
+                        }
+
+                    } else { // Expert Mode
                         if (mSaveNewPath) {
-                            drawNewPath(canvas, mObjects.get(object));
+                            mDisplayNewPathText = true;
                         } else {
-                            drawObject(canvas, mObjects.get(object));
+                            mDollar.addPoint((int) mCurrentPos.X, (int) mCurrentPos.Y);
                         }
                     }
-
-                } else { // Expert Mode
-                    if (mSaveNewPath) {
-                        mDisplayNewPathText = true;
-                    } else {
-                        mDollar.addPoint((int) mCurrentPos.X, (int) mCurrentPos.Y);
-                    }
                 }
             }
         }
+
     }
 
 
@@ -239,8 +261,8 @@ public class MyView extends View {
         int[] points = object.getPoints();
         for (int x = 0; x < points.length; x += 2) {
 
-            float x_pos = points[x] * mObjectScale + (int) mInitPos.X - points[0] * mObjectScale; // objects points to global space
-            float y_pos = points[x + 1] * mObjectScale + (int) mInitPos.Y - points[1] * mObjectScale; // objects points to global space
+            float x_pos = points[x] * mObjectScale + (int) mInitPos.X - points[0] * mObjectScale; // objects points to local space
+            float y_pos = points[x + 1] * mObjectScale + (int) mInitPos.Y - points[1] * mObjectScale; // objects points to local space
             mFeedforwardPath.lineTo(x_pos, y_pos);
 
             if (x == (points.length - 2) && !(object.getName().equals(mNewObjectName))) {
@@ -272,8 +294,8 @@ public class MyView extends View {
 
         int[] points = object.getPoints();
         for (int x = 0; x < points.length; x += 2) {
-            float x_pos = points[x] * mObjectScale + (int) mInitPos.X - points[0] * mObjectScale; // objects points to global space
-            float y_pos = points[x + 1] * mObjectScale + (int) mInitPos.Y - points[1] * mObjectScale; // objects points to global space
+            float x_pos = points[x] * mObjectScale + (int) mInitPos.X - points[0] * mObjectScale; // objects points to local space
+            float y_pos = points[x + 1] * mObjectScale + (int) mInitPos.Y - points[1] * mObjectScale; // objects points to local space
 
             if (x < object.getStartPos()) {
                 mFeedbackPath.lineTo(x_pos, y_pos);
@@ -317,7 +339,6 @@ public class MyView extends View {
     private void clear() {
         if (mSaveNewPath && mNoviceMode) {
             setNewPath();
-            mSaveNewPath = false;
 
         } else {
             for (String objectName : mObjects.keySet()) {
@@ -359,10 +380,15 @@ public class MyView extends View {
         for (int i = 0; i < newPath.size(); i++) {
             points[i] = (int) (newPath.get(i) / mObjectScale);
         }
+        if (newPath.size() > 40) {
+            mDollar.setNewPoints(mNewObjectName, points);
+            object.setPoints(points);
+            mTryAgain = false;
+            mSaveNewPath = false;
+        } else {
+            mTryAgain = true;
+        }
 
-        mDollar.setNewPoints(mNewObjectName, points);
-
-        object.setPoints(points);
     }
 
 

@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
                     newText += pasteData;
                     newText += text.substring(end, text.length());
                     editText.setText(newText);
-                    editText.setSelection(end); // setting the cursor to the end of the text
+                    editText.setSelection(start + pasteData.length()); // setting the cursor to the end of the text
 
                 } else {
                     int cursor_pos = editText.getSelectionStart();
